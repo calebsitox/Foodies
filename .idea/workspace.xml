@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="685c959b-8ba9-4f26-9db2-d3a5796e5cd5" name="Changes" comment="Eliminacion" />
+    <list default="true" id="685c959b-8ba9-4f26-9db2-d3a5796e5cd5" name="Changes" comment="creacion" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -101,7 +101,23 @@
       <option name="project" value="LOCAL" />
       <updated>1728495905466</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="creacion">
+      <option name="closed" value="true" />
+      <created>1728495953195</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1728495953195</updated>
+    </task>
+    <task id="LOCAL-00008" summary="creacion">
+      <option name="closed" value="true" />
+      <created>1728496039253</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1728496039253</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -119,6 +135,7 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Creation Of Android" />
     <MESSAGE value="Eliminacion" />
-    <option name="LAST_COMMIT_MESSAGE" value="Eliminacion" />
+    <MESSAGE value="creacion" />
+    <option name="LAST_COMMIT_MESSAGE" value="creacion" />
   </component>
 </project>
