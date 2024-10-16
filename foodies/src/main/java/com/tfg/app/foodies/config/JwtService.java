@@ -19,14 +19,13 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-
-    // Usa un array de bytes para mayor seguridad (debe tener al menos 256 bits)
-	private final String SECRET_KEY = "your_secret_key";
-
-    private Key getSigningKey() {
-        byte[] keyBytes = SECRET_KEY.getBytes();
-        return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+	private final SecretKey secretKey;
+	
+	public JwtService() {
+        // Genera una clave segura para HS256
+        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
+
     // Extraer el username del token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -39,7 +38,7 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())  // Usa SecretKey aquí
+                .setSigningKey(secretKey)  // Usa SecretKey aquí
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -66,7 +65,7 @@ public class JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // Firma usando la clave
+                .signWith(secretKey, SignatureAlgorithm.HS256) // Firma usando la clave
                 .compact();
     }
     
@@ -76,7 +75,7 @@ public class JwtService {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // Expiración de 10 horas
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)  // Firma con SecretKey
+                .signWith(secretKey, SignatureAlgorithm.HS256)  // Firma con SecretKey
                 .compact();
     }
 }

@@ -24,7 +24,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Buscar el usuario por nombre de usuario en el repositorio
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
@@ -36,11 +35,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Convertir la entidad User a UserDetails de Spring Security
         return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
                 .password(user.getPassword())  // La contraseña ya debe estar codificada
-                .authorities(authorities)  // Asignar roles dinámicamente
+                .authorities(authorities)
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
-                .disabled(!user.isEnabled())  // Se usa el campo enabled para controlar el estado de la cuenta
+                .disabled(!user.isEnabled())
                 .build();
+    }
+    public boolean userExists(String username) {
+        return userRepository.findByUsername(username).isPresent();
     }
 }
