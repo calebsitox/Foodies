@@ -4,48 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="685c959b-8ba9-4f26-9db2-d3a5796e5cd5" name="Changes" comment="creacion">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/build.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/proguard-rules.pro" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/androidTest/java/com/aula/androidfoodies/ExampleInstrumentedTest.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/AndroidManifest.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/java/com/aula/androidfoodies/MainActivity.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/java/com/aula/androidfoodies/ui/theme/Color.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/java/com/aula/androidfoodies/ui/theme/Theme.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/java/com/aula/androidfoodies/ui/theme/Type.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/drawable/ic_launcher_foreground.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-hdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-mdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/values/colors.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/values/strings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/values/themes.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/xml/backup_rules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/main/res/xml/data_extraction_rules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/app/src/test/java/com/aula/androidfoodies/ExampleUnitTest.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/build.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/gradle.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/gradle/libs.versions.toml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AndroidFoodies/settings.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/foodies/src/main/java/com/tfg/app/foodies/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/foodies/src/main/java/com/tfg/app/foodies/entities/User.java" afterDir="false" />
-    </list>
+    <list default="true" id="685c959b-8ba9-4f26-9db2-d3a5796e5cd5" name="Changes" comment="creacion" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

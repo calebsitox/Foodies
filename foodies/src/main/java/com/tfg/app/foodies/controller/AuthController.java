@@ -21,6 +21,8 @@ import com.tfg.app.foodies.dtos.RegisterRequest;
 import com.tfg.app.foodies.entities.User;
 import com.tfg.app.foodies.repository.UserRepository;
 
+
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -39,40 +41,45 @@ public class AuthController {
 		this.userDetailsService = userDetailsService;
 	}
 
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-		System.out.println("Attempting login for: " + loginRequest.getUsername());
-		try {
-			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        System.out.println("Attempting login for: " + loginRequest.getUsername());
+        try {
+            // Autenticar al usuario con sus credenciales
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-			UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-			String token = jwtService.generateToken(userDetails);
+            // Cargar detalles del usuario y generar el token JWT
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+            String token = jwtService.generateToken(userDetails);
 
-			return ResponseEntity.ok(new AuthResponse(token));
-		} catch (AuthenticationException e) {
-			System.out.println("Authentication failed: " + e.getMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-		}
-	}
+            return ResponseEntity.ok(new AuthResponse(token));
+        } catch (AuthenticationException e) {
+            // Responder con FORBIDDEN si la autenticación falla (contraseña incorrecta)
+            System.out.println("Authentication failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid username or password");
+        }
+    }
 
-	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
 
-		// Verificar si el usuario ya existe
-		if (userDetailsService.userExists(registerRequest.getUsername())) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");
-		}
+        // Verificar si el usuario ya existe
+        if (userDetailsService.userExists(registerRequest.getUsername())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username '" + registerRequest.getUsername() + "' already exists");
+        }
 
-		// Crear el nuevo usuario
-		String encodedPassword = new BCryptPasswordEncoder().encode(registerRequest.getPassword());
-		User newUser = new User(); // Asegúrate de que tienes una clase User
-		newUser.setUsername(registerRequest.getUsername());
-		newUser.setPassword(encodedPassword);
+        // Crear el nuevo usuario con contraseña codificada
+        String encodedPassword = new BCryptPasswordEncoder().encode(registerRequest.getPassword());
+        User newUser = new User(); // Asegúrate de que tienes una clase User con los campos necesarios
+        newUser.setUsername(registerRequest.getUsername());
+        newUser.setPassword(encodedPassword);
+        newUser.setEmail(registerRequest.getEmail()); // Establece el email del usuario
 
-		// Guardar el usuario en la base de datos
-		userRepository.save(newUser); // Asegúrate de que esto esté configurado correctamente
+        // Guardar el usuario en la base de datos
+        userRepository.save(newUser);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
-	}
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+    }
+
 }
