@@ -40,8 +40,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = true)
-    private boolean enabled;
+    @Column(nullable = true )
+    private boolean enabled = true;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

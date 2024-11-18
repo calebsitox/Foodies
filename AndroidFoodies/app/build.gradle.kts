@@ -66,4 +66,18 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Retrofit y Gson
+    implementation(libs.retrofit)
+    implementation(libs.gson)
+
+    // OkHttp para logging
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
+    // Coroutines para llamadas asíncronas
+    implementation(libs.kotlinx.coroutines.android)
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+
 }
