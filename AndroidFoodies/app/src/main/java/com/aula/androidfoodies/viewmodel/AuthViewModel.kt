@@ -4,44 +4,87 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aula.androidfoodies.model.LoginRequest
 import com.aula.androidfoodies.model.RegisterRequest
+import com.aula.androidfoodies.model.Security
 import com.aula.androidfoodies.retrofit.RetrofitInstance
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 class AuthViewModel : ViewModel() {
 
-    fun login(email: String, password: String, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+    fun login(
+        username: String,
+        password: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.api.login(LoginRequest(email, password))
-                if (response.isSuccessful && response.body() != null) {
-                    onSuccess(response.body()!!)
+                val response = RetrofitInstance.api.login(LoginRequest(username, password))
+                if (response.isSuccessful) {
+                    val token = response.body()?.token
+                    if (token != null) {
+                        onSuccess(token)
+                    } else {
+                        onError("Token is null")
+                    }
                 } else {
-                    onError("Error en login: ${response.errorBody()?.string()}")
+                    onError("Error: ${response.code()} - ${response.message()}")
                 }
             } catch (e: IOException) {
-                onError("Error de red: ${e.localizedMessage}")
+                // Problema de red
+                onError("Network error: ${e.localizedMessage}")
             } catch (e: HttpException) {
-                onError("Error HTTP: ${e.localizedMessage}")
+                // Error HTTP
+                onError("HTTP error: ${e.localizedMessage}")
+            } catch (e: Exception) {
+                // Otros errores
+                onError("Unknown error: ${e.localizedMessage}")
             }
         }
     }
 
-    fun register(name: String, email: String, password: String, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+    fun register(
+        username: String,
+        email: String,
+        password: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.api.register(RegisterRequest(name, email, password))
-                if (response.isSuccessful && response.body() != null) {
-                    onSuccess(response.body()!!)
+                val response = RetrofitInstance.api.register(RegisterRequest(username, email, password))
+                if (response.isSuccessful) {
+                    val responseBody = response.body() ?: return@launch onError("Response body is null")
+                    onSuccess(responseBody) // Pasa el cuerpo de la respuesta como String a onSuccess
                 } else {
-                    onError("Error en registro: ${response.errorBody()?.string()}")
+                    onError("Error: ${response.message()}")
                 }
-            } catch (e: IOException) {
-                onError("Error de red: ${e.localizedMessage}")
-            } catch (e: HttpException) {
-                onError("Error HTTP: ${e.localizedMessage}")
+            } catch (e: Exception) {
+                onError(e.localizedMessage ?: "Unknown error")
             }
         }
     }
+    fun sendEmail(
+        email: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ){viewModelScope.launch {
+        try {
+            val response = RetrofitInstance.api.forgotPassword( email)
+            if (response.isSuccessful) {
+                val responseBody = response.body() ?: return@launch onError("Response body is null")
+                onSuccess(responseBody) // Pasa el cuerpo de la respuesta como String a onSuccess
+            } else {
+                onError("Error: ${response.message()}")
+            }
+        } catch (e: Exception) {
+            onError(e.localizedMessage ?: "Unknown error")
+        }
+    }
+    }
+
+
 }

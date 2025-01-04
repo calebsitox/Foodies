@@ -1,3 +1,4 @@
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -6,22 +7,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AuthViewModel
 
 
 @Composable
 fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel = viewModel()) {
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var resultMessage by remember { mutableStateOf("") }
 
@@ -50,9 +52,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel =
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("User Name") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -68,11 +70,25 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel =
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
+
             Button(
                 onClick = {
-                    authViewModel.login(email, password,
-                        onSuccess = { resultMessage = "Login successful: $it" },
-                        onError = { resultMessage = "Error: $it" })
+                    if (username.isBlank() || password.isBlank()) {
+                        resultMessage = "Email and password cannot be empty"
+                    } else {
+                        // Llamamos a la función login desde el ViewModel
+                        authViewModel.login(
+                            username = username,
+                            password = password,
+                            onSuccess = {
+                                resultMessage = "Login successful"
+                            },
+                            onError = {
+                                resultMessage = "Error: $it"
+                            }
+                        )
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -83,6 +99,15 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel =
 
             Text(text = resultMessage)
         }
+        Text(
+            text = "¿Olvidaste tu contraseña? Enviar correo",
+            fontSize = 14.sp,
+            textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .clickable { navController.navigate("sendEmail") })
 
         // Underlined text for sign up
         Text(

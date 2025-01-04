@@ -1,5 +1,6 @@
 package com.aula.androidfoodies.ui.theme
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,6 +30,7 @@ fun RegisterScreen(navController: NavHostController, authViewModel: AuthViewMode
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var resultMessage by remember { mutableStateOf("") }
 
     val customStyle = androidx.compose.ui.text.TextStyle(
         fontSize = 32.sp,
@@ -86,7 +88,22 @@ fun RegisterScreen(navController: NavHostController, authViewModel: AuthViewMode
         // Botón de Register
         Button(
             onClick = {
-                // Aquí podrías agregar lógica para el registro
+                //       if (username.isBlank() || email.isBlank() || password.isBlank()) {
+                //               resultMessage = "Email and password cannot be empty"
+                //               }
+                authViewModel.register(
+                    username = "usuario",
+                    email = "correo@example.com",
+                    password = "contraseña",
+                    onSuccess = { message ->
+                        Log.d("RegisterSuccess", message)
+                        // Muestra el mensaje de éxito
+                    },
+                    onError = { error ->
+                        Log.e("RegisterError", error)
+                        // Muestra el mensaje de error
+                    }
+                )
             },
             modifier = Modifier
                 .fillMaxWidth()

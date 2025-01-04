@@ -97,8 +97,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Retrofit y Gson
-    implementation(libs.retrofit)
-    implementation(libs.gson)
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
     // OkHttp para logging
     implementation(libs.okhttp)

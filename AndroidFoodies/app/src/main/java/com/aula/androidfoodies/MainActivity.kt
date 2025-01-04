@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aula.androidfoodies.ui.theme.AndroidFoodiesTheme
 import com.aula.androidfoodies.ui.theme.RegisterScreen
+import com.aula.androidfoodies.ui.theme.SendEmailScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +42,7 @@ fun NavigationComponent(navController: NavHostController) {
     ) {
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }
+        composable("sendEmail") { SendEmailScreen(navController) }
     }
 }
 
@@ -72,6 +74,7 @@ fun RegisterScreen() {
         Text("Register Screen")
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {

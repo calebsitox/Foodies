@@ -3,6 +3,6 @@ package com.aula.androidfoodies.model
 import com.google.gson.annotations.SerializedName
 
 data class LoginRequest(
-    @SerializedName("email") val email: String,
+    @SerializedName("username") val userName: String,
     @SerializedName("password") val password: String
 )
