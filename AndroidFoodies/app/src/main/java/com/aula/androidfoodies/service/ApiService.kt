@@ -28,7 +28,7 @@ interface ApiService {
     @POST("api/check/confirmation")
     fun confirmation(@Query("email") email: String, @Body inputCode : String): Response<String>
 
-    @POST("api/check/set-password")
+    @PUT("api/check/set-password")
     fun setPassword(@Query("email") email: String, @Query("inputCode") inputCode : String,
                     @Body newPassword : String): Response<String>
 }

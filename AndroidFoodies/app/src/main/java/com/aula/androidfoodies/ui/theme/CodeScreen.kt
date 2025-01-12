@@ -1,5 +1,6 @@
 package com.aula.androidfoodies.ui.theme
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -12,12 +13,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.aula.androidfoodies.viewmodel.AuthViewModel
 
 @Composable
-fun ConfirmCodeScreen(navController: NavHostController, authViewModel: AuthViewModel = viewModel()) {
+fun CodeScreen(navController: NavHostController, authViewModel: AuthViewModel = viewModel()) {
+    var email by remember { mutableStateOf("") }
     var code by remember { mutableStateOf("") }
 
     Column(
@@ -37,7 +41,7 @@ fun ConfirmCodeScreen(navController: NavHostController, authViewModel: AuthViewM
         TextField(
             value = code,
             onValueChange = {
-                if (it.length <= 6) {
+                if (it.length <= 12) {
                     code = it
                 }
             },
@@ -49,12 +53,25 @@ fun ConfirmCodeScreen(navController: NavHostController, authViewModel: AuthViewM
 
         Button(
             onClick = {
-
-                // Lógica adicional para confirmar el código
+                authViewModel.confirmation(
+                    email = email,
+                    code = code,
+                    onSuccess = { message ->
+                        navController.navigate("success")
+                    },
+                    onError = { error ->
+                        Log.e("Confirmation Error", error)
+                    }
+                )
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Confirmar Código")
         }
     }
+}
+@Preview(showBackground = true)
+@Composable
+fun CodeScreenPreview() {
+    CodeScreen(navController = rememberNavController())
 }

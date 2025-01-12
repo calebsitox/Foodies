@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aula.androidfoodies.ui.theme.AndroidFoodiesTheme
+import com.aula.androidfoodies.ui.theme.CodeScreen
 import com.aula.androidfoodies.ui.theme.RegisterScreen
 import com.aula.androidfoodies.ui.theme.SendEmailScreen
 
@@ -43,6 +44,7 @@ fun NavigationComponent(navController: NavHostController) {
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }
         composable("sendEmail") { SendEmailScreen(navController) }
+        composable("code") { CodeScreen(navController) }
     }
 }
 

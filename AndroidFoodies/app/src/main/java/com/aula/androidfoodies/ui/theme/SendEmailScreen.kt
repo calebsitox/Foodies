@@ -39,9 +39,10 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
 
         Button(
             onClick = {
+                authViewModel.saveEmail(email) // Guardar el email
                 authViewModel.sendEmail(email = email, onSuccess = { message ->
                     Log.d("Email Send Success", message)
-
+                    navController.navigate("code")
                 },
                     onError = { error ->
                         Log.e("Error Send Email", error)
