@@ -17,6 +17,7 @@ import jakarta.mail.internet.MimeMessage;
 @Service
 public class MailService {
 	
+	private String emailSentTo;
 
 	@Autowired
 	private JavaMailSender emailSender;
@@ -30,6 +31,8 @@ public class MailService {
 		mimeMessageHelper.setSubject("Change Password");
 		mimeMessageHelper.setText(" Credential for confirmation \n" + createCredetntials());
 
+	    emailSentTo = email;
+	    
 		emailSender.send(mimeMessage);
 	}
 
@@ -46,8 +49,8 @@ public class MailService {
 
 	}
 
-	public boolean confirmCode(String userInput) {
-		return userInput.equals(generatedCode);
+	public boolean confirmCode(String userInput, String email) {
+		return userInput.equals(generatedCode) && email.equals(emailSentTo);
 	}
 
 

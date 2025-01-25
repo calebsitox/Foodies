@@ -30,14 +30,14 @@ public class MailController {
 
 	@PostMapping("/confirmation")
 	public ResponseEntity<?> confirmation(@RequestParam String email, @RequestBody String inputCode) {
-		boolean isConfirmed = mailService.confirmCode(inputCode);
+		boolean isConfirmed = mailService.confirmCode(inputCode, email);
 		return new ResponseEntity<>(isConfirmed, HttpStatus.OK);
 	}
 
 	@PutMapping("/set-password")
 	public ResponseEntity<?> setPassword(@RequestParam String email, @RequestParam String inputCode,
 			@RequestBody String newPassword) {
-		if (mailService.confirmCode(inputCode)) {
+		if (mailService.confirmCode(inputCode, email)) {
 			return new ResponseEntity<>(userService.setPassword(email, newPassword), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>("Invalid confirmation code", HttpStatus.BAD_REQUEST);

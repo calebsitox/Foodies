@@ -19,10 +19,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aula.androidfoodies.ui.theme.AndroidFoodiesTheme
+import com.aula.androidfoodies.ui.theme.ChangePassword
 import com.aula.androidfoodies.ui.theme.CodeScreen
 import com.aula.androidfoodies.ui.theme.RegisterScreen
 import com.aula.androidfoodies.ui.theme.SendEmailScreen
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,9 +49,9 @@ fun NavigationComponent(navController: NavHostController) {
         composable("register") { RegisterScreen(navController) }
         composable("sendEmail") { SendEmailScreen(navController) }
         composable("code") { CodeScreen(navController) }
+        composable("changePassword") { ChangePassword(navController) }
     }
 }
-
 @Composable
 fun LoginScreen(navController: NavHostController) {
     Column(

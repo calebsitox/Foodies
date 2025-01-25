@@ -16,13 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.aula.androidfoodies.viewmodel.AuthViewModel
 
 @Composable
 fun CodeScreen(navController: NavHostController, authViewModel: AuthViewModel = viewModel()) {
-    var email by remember { mutableStateOf("") }
-    var code by remember { mutableStateOf("") }
+    val inputCode by authViewModel.inputCode // ✅ Usa `val` para evitar problemas
 
     Column(
         modifier = Modifier
@@ -39,12 +39,8 @@ fun CodeScreen(navController: NavHostController, authViewModel: AuthViewModel = 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
-            value = code,
-            onValueChange = {
-                if (it.length <= 12) {
-                    code = it
-                }
-            },
+            value = inputCode,
+            onValueChange = { authViewModel.saveInputCode(it) }, // ✅ Guarda el valor correcto
             label = { Text("Código") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -53,11 +49,11 @@ fun CodeScreen(navController: NavHostController, authViewModel: AuthViewModel = 
 
         Button(
             onClick = {
+                Log.d("CodeScreen", "Código ingresado: $inputCode") // ✅ Log para depuración
                 authViewModel.confirmation(
-                    email = email,
-                    code = code,
+                    inputCode = inputCode,
                     onSuccess = { message ->
-                        navController.navigate("success")
+                        navController.navigate("changePassword")
                     },
                     onError = { error ->
                         Log.e("Confirmation Error", error)
@@ -70,6 +66,7 @@ fun CodeScreen(navController: NavHostController, authViewModel: AuthViewModel = 
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun CodeScreenPreview() {
