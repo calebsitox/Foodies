@@ -14,6 +14,10 @@ activityCompose = "1.9.3"
 composeBom = "2023.08.00"
 navigationCompose = "2.8.4"
 material3Android = "1.3.1"
+playServicesLocation = "21.3.0"
+appcompat = "1.7.0"
+places = "4.1.0"
+composeMaterial = "1.4.0"
 
 [libraries]
 
@@ -38,6 +42,10 @@ logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-intercep
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
+androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

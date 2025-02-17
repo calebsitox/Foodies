@@ -26,6 +26,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel =
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var resultMessage by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -81,8 +82,11 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel =
                         authViewModel.login(
                             username = username,
                             password = password,
-                            onSuccess = {
+                            onSuccess = { token->
                                 resultMessage = "Login successful"
+                                TokenManager.saveToken(context, token)
+
+                                navController.navigate("location")
                             },
                             onError = {
                                 resultMessage = "Error: $it"

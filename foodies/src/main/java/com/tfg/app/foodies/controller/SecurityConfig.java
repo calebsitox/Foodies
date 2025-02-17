@@ -48,7 +48,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin estado
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/**").permitAll() // Permite el acceso a la autenticación
+                .requestMatchers("/api/auth/**","/api/geocode/**", "/**").permitAll() // Permite el acceso a la autenticación
                 .anyRequest().authenticated()) // Cualquier otra solicitud necesita autenticación
 
             // Añade el filtro JWT antes de UsernamePasswordAuthenticationFilter

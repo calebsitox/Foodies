@@ -66,6 +66,9 @@ dependencies {
     // Compose UI Core
     implementation("androidx.compose.ui:ui:1.5.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.places)
     debugImplementation("androidx.compose.ui:ui-tooling:1.5.0")
 
     // Retrofit y Gson

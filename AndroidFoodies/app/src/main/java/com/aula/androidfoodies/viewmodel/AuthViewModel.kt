@@ -5,13 +5,20 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aula.androidfoodies.model.GeocodeRequest
+import com.aula.androidfoodies.model.GeocodeResponse
 import com.aula.androidfoodies.model.LoginRequest
 import com.aula.androidfoodies.model.RegisterRequest
 import com.aula.androidfoodies.model.Security
 import com.aula.androidfoodies.retrofit.RetrofitInstance
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.HttpException
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.awaitResponse
 import retrofit2.converter.gson.GsonConverterFactory
@@ -139,7 +146,6 @@ class AuthViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
-
     fun changePassword(
         newPassword: String,
         onSuccess: (String) -> Unit,
@@ -161,6 +167,31 @@ class AuthViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
+    private val _restaurants = mutableStateOf<List<Map<String, String>>>(emptyList())
+    val restaurants: State<List<Map<String, String>>> = _restaurants
+
+    val searchQuery = mutableStateOf("")
+
+    fun fetchNearbyRestaurants(latitude: Double, longitude: Double) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.api.fetchNearbyRestaurants(latitude, longitude)
+                if (response.isSuccessful) {
+                    _restaurants.value = response.body() ?: emptyList()
+                } else {
+                    // Manejo de error: puedes actualizar otro estado o loguear el error
+                    Log.e("AuthViewModel", "Error en la respuesta: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error en la llamada: ${e.message}")
+            }
+        }
+    }
+
+
+
 }
+
+
 
 
