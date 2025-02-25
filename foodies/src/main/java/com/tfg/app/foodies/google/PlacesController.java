@@ -23,7 +23,6 @@ public class PlacesController {
 	
 	
     private static final String GOOGLE_PLACES_API_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
-    private static final String GOOGLE_AUTOCOMPLETE_API_URL = "https://places.googleapis.com/v1/places:autocomplete";
     private static final String API_KEY = "TU_API_KEY";
 
     @GetMapping("/places")
