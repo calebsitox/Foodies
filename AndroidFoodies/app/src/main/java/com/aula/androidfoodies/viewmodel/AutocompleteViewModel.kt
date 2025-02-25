@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.retrofit.RetrofitInstance
 import java.util.UUID
@@ -82,7 +83,7 @@ class AutocompleteViewModel : ViewModel() {
     fun adressToCordenates(adress: String, onSuccess: (GeocodeResponseToCordenates?) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.api.(adress)
+                val response = RetrofitInstance.api.parseAdress(AddressRequest(adress))
                 if (response.isSuccessful) {
                     response.body()?.let { geoResponse ->
                         _coordinates.value = geoResponse

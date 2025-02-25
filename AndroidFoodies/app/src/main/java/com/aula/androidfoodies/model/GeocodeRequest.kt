@@ -8,3 +8,7 @@ data class GeocodeResponseToCordenates(
     val latitude: Double,
     val longitude: Double
 )
+
+data class AddressRequest(
+    val adress: String
+)

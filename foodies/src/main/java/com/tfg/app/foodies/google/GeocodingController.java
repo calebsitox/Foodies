@@ -1,5 +1,12 @@
 package com.tfg.app.foodies.google;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +25,6 @@ import com.tfg.app.foodies.repository.LocationRepository;
 import com.tfg.app.foodies.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Slf4j
 @RestController
@@ -64,6 +66,41 @@ public class GeocodingController {
              return "Address not found";
          }
     	
+    }
+    
+    @PostMapping("/geocode/addressToCoordinates")
+    public ResponseEntity<?> getCoordinatesFromAddress(@RequestBody String address) {
+        LOGGER.info("Recibido: Address = " + address);
+
+        if (address == null || address.isBlank()) {
+            return ResponseEntity.badRequest().body("Error: No address provided");
+        }
+
+        // Construir la URL codificando la dirección
+        String url = GOOGLE_GEOCODING_API_URL 
+                   + "?address=" + URLEncoder.encode(address, StandardCharsets.UTF_8)
+                   + "&key=" + API_KEY;
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            JsonNode root = new ObjectMapper().readTree(response.getBody());
+
+            if (root.has("results") && root.get("results").size() > 0) {
+                JsonNode location = root.get("results").get(0).get("geometry").get("location");
+                double lat = location.get("lat").asDouble();
+                double lng = location.get("lng").asDouble();
+                Map<String, Double> coordinates = Map.of("latitude", lat, "longitude", lng);
+                return ResponseEntity.ok(coordinates);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No se encontraron coordenadas para la dirección proporcionada");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error al obtener las coordenadas", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener las coordenadas");
+        }
     }
     
 

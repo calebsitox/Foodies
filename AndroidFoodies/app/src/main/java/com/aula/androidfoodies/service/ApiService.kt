@@ -1,8 +1,10 @@
 package com.aula.androidfoodies.service
 
+import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.AutocompleteResponse
 import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.GeocodeResponse
+import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.model.LoginRequest
 import com.aula.androidfoodies.model.Message
 import com.aula.androidfoodies.model.RegisterRequest
@@ -51,11 +53,14 @@ interface ApiService {
         @Query("longitude") longitude: Double
     ): Response<List<Map<String, String>>>
 
-    @GET("/api/autocomplete")
+    @POST("/api/autocomplete")
     suspend fun getAutocomplete(
         @Query("input") input: String,
         @Query("sessionToken") sessionToken: String
     ): Response<AutocompleteResponse>
 
-    
+    @POST("api/geocode/addressToCoordinates")
+    suspend fun parseAdress(@Body request: AddressRequest): Response<GeocodeResponseToCordenates>
+
+
 }
