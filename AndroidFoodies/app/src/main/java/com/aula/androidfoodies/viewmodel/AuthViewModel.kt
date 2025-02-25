@@ -167,28 +167,6 @@ class AuthViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
-    private val _restaurants = mutableStateOf<List<Map<String, String>>>(emptyList())
-    val restaurants: State<List<Map<String, String>>> = _restaurants
-
-    val searchQuery = mutableStateOf("")
-
-    fun fetchNearbyRestaurants(latitude: Double, longitude: Double) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.api.fetchNearbyRestaurants(latitude, longitude)
-                if (response.isSuccessful) {
-                    _restaurants.value = response.body() ?: emptyList()
-                } else {
-                    // Manejo de error: puedes actualizar otro estado o loguear el error
-                    Log.e("AuthViewModel", "Error en la respuesta: ${response.errorBody()?.string()}")
-                }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error en la llamada: ${e.message}")
-            }
-        }
-    }
-
-
 
 }
 

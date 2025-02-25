@@ -10,7 +10,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,16 +26,22 @@ import androidx.navigation.NavHostController
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
 
 @Composable
-fun LocationSearchScreen(navController: NavHostController, viewModel: AutocompleteViewModel = viewModel()) {
+fun LocationSearchScreen(
+    navController: NavHostController,
+    viewModel: AutocompleteViewModel = viewModel()
+) {
     val searchQuery = remember { mutableStateOf("") }
+    val restaurants = viewModel.restaurants.value
 
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         OutlinedTextField(
             value = searchQuery.value,
             onValueChange = { query ->
                 searchQuery.value = query
-                // Llamar a la función de autocompletado
+                // Llamada al autocompletado
                 viewModel.fetchAutocompleteSuggestions(query)
             },
             label = { Text("Buscar dirección") },
@@ -42,10 +51,54 @@ fun LocationSearchScreen(navController: NavHostController, viewModel: Autocomple
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Mostrar sugerencias
+        // Lista de sugerencias de autocompletado
         LazyColumn {
             items(viewModel.suggestions) { suggestion ->
-                Text(text = suggestion, modifier = Modifier.padding(8.dp))
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .clickable {
+                            // Actualiza el campo de búsqueda y obtiene coordenadas
+                            searchQuery.value = suggestion
+                            viewModel.adressToCordenates(suggestion) { geoResponse ->
+                                geoResponse?.let {
+                                    viewModel.fetchNearbyRestaurants(it.latitude, it.longitude)
+                                }
+                            }
+                        },
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Text(
+                        text = suggestion,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Lista de restaurantes obtenidos
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(restaurants) { place ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = place["name"] ?: "Sin nombre",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = place["address"] ?: "Sin dirección",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
         }
     }
