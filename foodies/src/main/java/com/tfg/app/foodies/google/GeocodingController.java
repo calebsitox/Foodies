@@ -70,7 +70,7 @@ public class GeocodingController {
     }
     
     @GetMapping("/geocode/addressToCoordinates")
-	public ResponseEntity<?> addressToCordinates(@RequestBody String address) {
+	public ResponseEntity<?> addressToCordinates(@RequestParam String address) {
 		try {
 			if (address == null || address.isBlank()) {
 				return ResponseEntity.badRequest().body("Error: No address provided");

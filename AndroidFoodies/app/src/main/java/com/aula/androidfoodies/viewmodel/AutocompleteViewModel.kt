@@ -10,6 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.retrofit.RetrofitInstance
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.UUID
 
 class AutocompleteViewModel : ViewModel() {
@@ -70,22 +73,30 @@ class AutocompleteViewModel : ViewModel() {
         }
     }
 
-    fun adressToCordenates(adress: String, onSuccess: (GeocodeResponseToCordenates?) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.api.parseAdress(AddressRequest(adress))
+    fun fetchCoordinates(address: String, onSuccess: (latitude: Double, longitude: Double) -> Unit) {
+        val request = AddressRequest(address)
+        val call = RetrofitInstance.api.getCoordinates(request)
+
+        call.enqueue(object : Callback<GeocodeResponseToCordenates> {
+            override fun onResponse(
+                call: Call<GeocodeResponseToCordenates>,
+                response: Response<GeocodeResponseToCordenates>
+            ) {
                 if (response.isSuccessful) {
-                    response.body()?.let { geoResponse ->
-                        _coordinates.value = geoResponse
-                        onSuccess(geoResponse)
-                    } ?: throw Exception("El cuerpo de la respuesta es nulo")
+                    val coordinates = response.body()
+                    coordinates?.let {
+                        Log.d("Coordinates", "Lat: ${it.latitude}, Lng: ${it.longitude}")
+                        // Llamar al callback con las coordenadas obtenidas
+                        onSuccess(it.latitude, it.longitude)
+                    }
                 } else {
-                    throw Exception("Error en la respuesta: ${response.errorBody()?.string()}")
+                    Log.e("Error", "Error en la respuesta: ${response.errorBody()?.string()}")
                 }
-            } catch (e: Exception) {
-                Log.e("Autocomplete", "Error en la llamada: ${e.message}")
-                throw e
             }
-        }
+
+            override fun onFailure(call: Call<GeocodeResponseToCordenates>, t: Throwable) {
+                Log.e("Error", "Fallo en la llamada: ${t.message}")
+            }
+        })
     }
 }
