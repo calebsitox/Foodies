@@ -53,10 +53,9 @@ interface ApiService {
         @Query("longitude") longitude: Double
     ): Response<List<Map<String, String>>>
 
-    @POST("/api/autocomplete")
+    @GET("/api/autocomplete")
     suspend fun getAutocomplete(
-        @Query("input") input: String,
-        @Query("sessionToken") sessionToken: String
+        @Query("input") input: String
     ): Response<AutocompleteResponse>
 
     @POST("api/geocode/addressToCoordinates")

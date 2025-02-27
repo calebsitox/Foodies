@@ -19,10 +19,6 @@ class AutocompleteViewModel : ViewModel() {
     val searchQuery = mutableStateOf("")
     val address = mutableStateOf("")
 
-    // Estado para almacenar el session token (generado una sola vez por sesión de búsqueda)
-    private val _sessionToken = mutableStateOf<String?>(null)
-    val sessionToken: State<String?> = _sessionToken
-
     // Estado para almacenar las coordenadas obtenidas
     private val _coordinates = mutableStateOf<GeocodeResponseToCordenates?>(null)
     val coordinates: State<GeocodeResponseToCordenates?> = _coordinates
@@ -36,17 +32,11 @@ class AutocompleteViewModel : ViewModel() {
             suggestions.clear()
             return
         }
-        // Si aún no tenemos un session token, lo generamos
-        if (_sessionToken.value == null) {
-            _sessionToken.value = UUID.randomUUID().toString()
-        }
-
         viewModelScope.launch {
             try {
                 // Usamos el sessionToken persistente en la llamada
                 val response = RetrofitInstance.api.getAutocomplete(
-                    input = input,
-                    sessionToken = _sessionToken.value!!
+                    input = input
                 )
                 if (response.isSuccessful) {
                     response.body()?.let { autocompleteResponse ->
