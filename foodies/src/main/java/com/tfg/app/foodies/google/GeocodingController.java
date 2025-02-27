@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,7 @@ public class GeocodingController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GeocodingController.class);
 
     private static final String GOOGLE_GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json";
-    private static final String API_KEY = "AIzaSyC2e5dQEm9LxTLWbeaIcC34HoWL-xlB300";
+    private static final String API_KEY = "AIzaSyCNSEbqAUraUirf4YqRBbdxflyysTWWx6c";
     
     @PostMapping("/geocode")
     public ResponseEntity<?>getGeoCode(@RequestBody GeocodeRequest request) {
@@ -68,40 +69,41 @@ public class GeocodingController {
     	
     }
     
-    @PostMapping("/geocode/addressToCoordinates")
-    public ResponseEntity<?> getCoordinatesFromAddress(@RequestBody String address) {
-        LOGGER.info("Recibido: Address = " + address);
+    @GetMapping("/geocode/addressToCoordinates")
+	public ResponseEntity<?> addressToCordinates(@RequestBody String address) {
+		try {
+			if (address == null || address.isBlank()) {
+				return ResponseEntity.badRequest().body("Error: No address provided");
+			}
 
-        if (address == null || address.isBlank()) {
-            return ResponseEntity.badRequest().body("Error: No address provided");
-        }
+			// Construir la URL codificando el parámetro 'address'
+			String url = GOOGLE_GEOCODING_API_URL + "?address=" + URLEncoder.encode(address, StandardCharsets.UTF_8)
+					+ "&key=" + API_KEY;
 
-        // Construir la URL codificando la dirección
-        String url = GOOGLE_GEOCODING_API_URL 
-                   + "?address=" + URLEncoder.encode(address, StandardCharsets.UTF_8)
-                   + "&key=" + API_KEY;
+			// Realizar la solicitud GET a la API de Google
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            JsonNode root = new ObjectMapper().readTree(response.getBody());
+			// Convertir la respuesta a JsonNode
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode root = mapper.readTree(response.getBody());
 
-            if (root.has("results") && root.get("results").size() > 0) {
-                JsonNode location = root.get("results").get(0).get("geometry").get("location");
-                double lat = location.get("lat").asDouble();
-                double lng = location.get("lng").asDouble();
-                Map<String, Double> coordinates = Map.of("latitude", lat, "longitude", lng);
-                return ResponseEntity.ok(coordinates);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("No se encontraron coordenadas para la dirección proporcionada");
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error al obtener las coordenadas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener las coordenadas");
-        }
-    }
+			// Verificar que existan resultados y extraer las coordenadas
+			if (root.has("results") && root.get("results").size() > 0) {
+				JsonNode location = root.get("results").get(0).get("geometry").get("location");
+				double lat = location.get("lat").asDouble();
+				double lng = location.get("lng").asDouble();
+				Map<String, Double> coordinates = Map.of("latitude", lat, "longitude", lng);
+				return ResponseEntity.ok(coordinates);
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body("No se encontraron coordenadas para la dirección proporcionada");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error al obtener las coordenadas", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener las coordenadas");
+		}
+	}
     
 
 	@PostMapping("/location/geocode")
