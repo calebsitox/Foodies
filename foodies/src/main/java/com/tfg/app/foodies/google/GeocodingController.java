@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,51 +26,56 @@ import com.tfg.app.foodies.entities.User;
 import com.tfg.app.foodies.repository.LocationRepository;
 import com.tfg.app.foodies.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class GeocodingController {
-	
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(GeocodingController.class);
+
+	private static final String GOOGLE_GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json";
+
+	private static final String API_KEY = "AIzaSyCNSEbqAUraUirf4YqRBbdxflyysTWWx6c";
+
+	@Value("${google.api.key}")
+	private String apiKey;
+
 	private LocationRepository locationRepository;
-	
+
 	private UserRepository userRepository;
-	
-	
-    private static final Logger LOGGER = LoggerFactory.getLogger(GeocodingController.class);
 
-    private static final String GOOGLE_GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json";
-    private static final String API_KEY = "AIzaSyCNSEbqAUraUirf4YqRBbdxflyysTWWx6c";
-    
-    @PostMapping("/geocode")
-    public ResponseEntity<?>getGeoCode(@RequestBody GeocodeRequest request) {
-    	
-        LOGGER.info("Recibido: Latitud = " + request.getLatitude() + ", Longitud = " + request.getLongitude());
+	@PostMapping("/geocode")
+	public ResponseEntity<?> getGeoCode(@RequestBody GeocodeRequest request) {
 
-        if (request.getLatitude() == 0.0 || request.getLongitude() == 0.0) {
-            return ResponseEntity.badRequest().body("Error: Coordenadas inválidas");
-        }
-    	String url = GOOGLE_GEOCODING_API_URL + "?latlng=" + request.getLatitude() + ", " + request.getLongitude() + "&key=" + API_KEY;
-    	
-    	
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        
-    	return ResponseEntity.ok(parseAddress(response.getBody()));
-    }
-    
-    private String parseAddress(String responseJson) {
-    	 try {
-             JsonNode root = new ObjectMapper().readTree(responseJson);
-             return root.path("results").get(0).path("formatted_address").asText();
-         } catch (Exception e) {
-             return "Address not found";
-         }
-    	
-    }
-    
-    @GetMapping("/geocode/addressToCoordinates")
+		LOGGER.info("Recibido: Latitud = " + request.getLatitude() + ", Longitud = " + request.getLongitude());
+
+		if (request.getLatitude() == 0.0 || request.getLongitude() == 0.0) {
+			return ResponseEntity.badRequest().body("Error: Coordenadas inválidas");
+		}
+		String url = GOOGLE_GEOCODING_API_URL + "?latlng=" + request.getLatitude() + ", " + request.getLongitude()
+				+ "&key=" + API_KEY;
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+		return ResponseEntity.ok(parseAddress(response.getBody()));
+	}
+
+	private String parseAddress(String responseJson) {
+		try {
+			JsonNode root = new ObjectMapper().readTree(responseJson);
+			return root.path("results").get(0).path("formatted_address").asText();
+		} catch (Exception e) {
+			return "Address not found";
+		}
+
+	}
+
+	@GetMapping("/geocode/addressToCoordinates")
 	public ResponseEntity<?> addressToCordinates(@RequestParam String address) {
 		try {
 			if (address == null || address.isBlank()) {
@@ -104,37 +110,36 @@ public class GeocodingController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener las coordenadas");
 		}
 	}
-    
 
 	@PostMapping("/location/geocode")
 	public ResponseEntity<?> getGeocode(@RequestBody GeocodeRequest request, @RequestParam Long userId) {
-	    Optional<User> user = userRepository.findById(userId);
-	    if (user.isEmpty()) {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
-	    }
-	    
+		Optional<User> user = userRepository.findById(userId);
+		if (user.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+		}
 
-	    Optional<Location> existingLocation = locationRepository.findByLatitudeAndLongitudeAndUser(
-	            request.getLatitude(), request.getLongitude(), user.get());
+		Optional<Location> existingLocation = locationRepository
+				.findByLatitudeAndLongitudeAndUser(request.getLatitude(), request.getLongitude(), user.get());
 
-	    if (existingLocation.isPresent()) {
-	        return ResponseEntity.ok(existingLocation.get().getAddress());
-	    }
+		if (existingLocation.isPresent()) {
+			return ResponseEntity.ok(existingLocation.get().getAddress());
+		}
 
-	    String url = GOOGLE_GEOCODING_API_URL + "?latlng=" + request.getLatitude() + "," + request.getLongitude() + "&key=" + API_KEY;
-	    RestTemplate restTemplate = new RestTemplate();
-	    ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+		String url = GOOGLE_GEOCODING_API_URL + "?latlng=" + request.getLatitude() + "," + request.getLongitude()
+				+ "&key=" + API_KEY;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-	    String address = parseAddress(response.getBody());
+		String address = parseAddress(response.getBody());
 
-	    Location newLocation = new Location();
-	    newLocation.setUser(user.get());
-	    newLocation.setLatitude(request.getLatitude());
-	    newLocation.setLongitude(request.getLongitude());
-	    newLocation.setAddress(address);
-	    locationRepository.save(newLocation);
+		Location newLocation = new Location();
+		newLocation.setUser(user.get());
+		newLocation.setLatitude(request.getLatitude());
+		newLocation.setLongitude(request.getLongitude());
+		newLocation.setAddress(address);
+		locationRepository.save(newLocation);
 
-	    return ResponseEntity.ok(address);
+		return ResponseEntity.ok(address);
 	}
-    
+
 }
