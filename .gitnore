@@ -1,0 +1,34 @@
+# Ignorar archivos de configuración con claves API
+/src/main/resources/application-secret.properties
+/local.properties
+
+# Ignorar archivos compilados
+/build/
+/bin/
+/out/
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignorar archivos de IDE
+/.idea/
+/*.iml
+/*.ipr
+/*.iws
+/.settings/
+/.classpath
+/.project
+/.vscode/
+
+# Ignorar archivos de Gradle
+/.gradle/
+/gradle-app.setting
+
+# Ignorar archivos de configuración local
+/config.properties
+/.env
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
