@@ -27,6 +27,8 @@ import javax.inject.Inject
 
 class AuthViewModel @Inject constructor() : ViewModel() {
     private var _email = mutableStateOf("")
+    private val _token = mutableStateOf<String?>(null)
+    val token: String? get() = _token.value
     val email: State<String> = _email
 
     private var _inputCode = mutableStateOf("")

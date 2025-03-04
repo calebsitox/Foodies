@@ -10,21 +10,32 @@ import androidx.compose.runtime.mutableStateOf
 import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.retrofit.RetrofitInstance
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.UUID
 
 class AutocompleteViewModel : ViewModel() {
+    private val _isSuggestionsVisible = MutableStateFlow(true) // Estado para controlar la visibilidad
+    val isSuggestionsVisible: StateFlow<Boolean> = _isSuggestionsVisible
+
+    // Función para ocultar las sugerencias
+    fun hideSuggestions() {
+        _isSuggestionsVisible.value = false
+    }
+
+    // Función para mostrar las sugerencias
+    fun showSuggestions() {
+        _isSuggestionsVisible.value = true
+    }
 
     // Estado para las sugerencias y el texto de búsqueda
     val suggestions = mutableStateListOf<String>()
-    val searchQuery = mutableStateOf("")
-    val address = mutableStateOf("")
 
     // Estado para almacenar las coordenadas obtenidas
     private val _coordinates = mutableStateOf<GeocodeResponseToCordenates?>(null)
-    val coordinates: State<GeocodeResponseToCordenates?> = _coordinates
 
     // Estado para almacenar los restaurantes obtenidos según las coordenadas
     private val _restaurants = mutableStateOf<List<Map<String, String>>>(emptyList())

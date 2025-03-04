@@ -18,21 +18,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun LocationSearchScreen(
     navController: NavHostController,
     viewModel: AutocompleteViewModel = viewModel()
 ) {
+    val isSuggestionsVisible by viewModel.isSuggestionsVisible.collectAsState()
     val searchQuery = remember { mutableStateOf("") }
     val restaurants = viewModel.restaurants.value
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -48,32 +56,36 @@ fun LocationSearchScreen(
             label = { Text("Buscar dirección") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             modifier = Modifier.fillMaxWidth()
+
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Lista de sugerencias de autocompletado
-        LazyColumn {
-            items(viewModel.suggestions) { suggestion ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable {
-                            // Actualiza el campo de búsqueda y obtiene coordenadas
-                            searchQuery.value = suggestion
-                            viewModel.fetchCoordinates(suggestion) { latitude, longitude ->
+        if(isSuggestionsVisible) {// Lista de sugerencias de autocompletado
+            LazyColumn {
+                items(viewModel.suggestions) { suggestion ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                // Actualiza el campo de búsqueda y obtiene coordenadas
+                                searchQuery.value = suggestion
+                                viewModel.fetchCoordinates(suggestion) { latitude, longitude ->
                                     // Usa las coordenadas obtenidas para buscar restaurantes cercanos
                                     viewModel.fetchNearbyRestaurants(latitude, longitude)
-
-                            }
-                        },
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Text(
-                        text = suggestion,
-                        modifier = Modifier.padding(16.dp)
-                    )
+                                    viewModel.hideSuggestions()
+                                    // Oculta el teclado
+                                    keyboardController?.hide()
+                                }
+                            },
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Text(
+                            text = suggestion,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
                 }
             }
         }
