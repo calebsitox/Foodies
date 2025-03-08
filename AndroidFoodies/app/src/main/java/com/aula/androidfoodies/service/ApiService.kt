@@ -4,7 +4,6 @@ import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.AutocompleteResponse
 import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.GeocodeResponse
-import com.aula.androidfoodies.model.GeocodeResponseDb
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.model.LoginRequest
 import com.aula.androidfoodies.model.RegisterRequest
@@ -13,13 +12,13 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Query
 
 
 interface ApiService {
+
 
 
     @POST("api/auth/login")
@@ -43,13 +42,6 @@ interface ApiService {
 
     @POST("api/geocode")
     fun sendCoordinates(@Body request: GeocodeRequest): Call<GeocodeResponse>
-
-    @POST("api/geocode")
-    fun sendCoordinatesToDataBase(
-        @Header("Authorization") userToken: String,
-        @Query("userId") userId: Long,
-        @Body request: GeocodeRequest
-    ): Call<GeocodeResponseDb>
 
     @GET("/api/places/name/directions")
     suspend fun fetchNearbyRestaurants(
