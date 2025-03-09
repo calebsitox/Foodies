@@ -7,12 +7,14 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfg.app.foodies.dtos.GeocodeRequest;
+import com.tfg.app.foodies.dtos.GeocodeRequestUser;
 import com.tfg.app.foodies.entities.Location;
 import com.tfg.app.foodies.entities.User;
 import com.tfg.app.foodies.repository.LocationRepository;
@@ -46,6 +49,7 @@ public class GeocodingController {
 
 	private LocationRepository locationRepository;
 
+	@Autowired
 	private UserRepository userRepository;
 
 	@PostMapping("/geocode")
@@ -112,8 +116,8 @@ public class GeocodingController {
 	}
 
 	@PostMapping("/location/geocode")
-	public ResponseEntity<?> getGeocode(@RequestBody GeocodeRequest request, @RequestParam Long userId) {
-		Optional<User> user = userRepository.findById(userId);
+	public ResponseEntity<?> getGeocode(@RequestBody GeocodeRequestUser request, @RequestHeader("Authorization")  String token) {
+		Optional<User> user = userRepository.findUserByUserId(request.getUserId());
 		if (user.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
 		}

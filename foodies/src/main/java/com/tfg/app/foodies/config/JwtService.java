@@ -1,6 +1,7 @@
 package com.tfg.app.foodies.config;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -16,6 +17,8 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+	
+    private static final long EXPIRATION_TIME = 10 * 60 * 60 * 1000; // 10 horas
 	private final SecretKey secretKey;
 
 	public JwtService() {
@@ -54,17 +57,22 @@ public class JwtService {
 	}
 
 	// Generar un nuevo token
-	public String generateToken(UserDetails userDetails) {
-		return Jwts.builder().setSubject(userDetails.getUsername()).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
-				.signWith(secretKey, SignatureAlgorithm.HS256) // Firma usando la clave
-				.compact();
-	}
+    // Generar un token con UserDetails
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities()); // Agregar roles como claim
+        return createToken(claims, userDetails.getUsername());
+    }
 
-	private String createToken(Map<String, Object> claims, String subject) {
-		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // Expiración de 10 horas
-				.signWith(secretKey, SignatureAlgorithm.HS256) // Firma con SecretKey
-				.compact();
-	}
+    // Generar un token con claims personalizados
+    private String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+            .setClaims(claims) // Claims personalizados
+            .setSubject(subject) // Subject (usuario)
+            .setIssuedAt(new Date()) // Fecha de emisión
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expira en 10 horas
+            .signWith(secretKey, SignatureAlgorithm.HS256) // Firma usando la clave secreta
+            .compact();
+    }
+	
 }

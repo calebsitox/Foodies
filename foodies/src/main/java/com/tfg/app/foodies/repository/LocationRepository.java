@@ -11,6 +11,7 @@ import com.tfg.app.foodies.entities.User;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
+	
     Optional<Location> findByLatitudeAndLongitudeAndUser(double latitude, double longitude, User user);
     List<Location> findByUser(User user);
 }
