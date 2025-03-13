@@ -46,7 +46,8 @@ public class GeocodingController {
 
 	@Value("${google.api.key}")
 	private String apiKey;
-
+	
+	@Autowired
 	private LocationRepository locationRepository;
 
 	@Autowired
@@ -117,17 +118,12 @@ public class GeocodingController {
 
 	@PostMapping("/location/geocode")
 	public ResponseEntity<?> getGeocode(@RequestBody GeocodeRequestUser request, @RequestHeader("Authorization")  String token) {
+		
 		Optional<User> user = userRepository.findUserByUserId(request.getUserId());
 		if (user.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
 		}
 
-		Optional<Location> existingLocation = locationRepository
-				.findByLatitudeAndLongitudeAndUser(request.getLatitude(), request.getLongitude(), user.get());
-
-		if (existingLocation.isPresent()) {
-			return ResponseEntity.ok(existingLocation.get().getAddress());
-		}
 
 		String url = GOOGLE_GEOCODING_API_URL + "?latlng=" + request.getLatitude() + "," + request.getLongitude()
 				+ "&key=" + API_KEY;
