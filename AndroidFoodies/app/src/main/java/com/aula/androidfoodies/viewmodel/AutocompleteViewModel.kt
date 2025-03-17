@@ -1,26 +1,52 @@
 package com.aula.androidfoodies.viewmodel
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Looper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.ActivityCompat
 import com.aula.androidfoodies.model.AddressRequest
+import com.aula.androidfoodies.model.GeocodeRequest
+import com.aula.androidfoodies.model.GeocodeResponse
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.retrofit.RetrofitInstance
+import com.aula.androidfoodies.retrofit.RetrofitInstance.api
+import com.aula.androidfoodies.service.ApiService
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.UUID
 
 class AutocompleteViewModel : ViewModel() {
 
+    private val _location = MutableStateFlow<Pair<Double, Double>?>(null)
+    val location: StateFlow<Pair<Double, Double>?> = _location.asStateFlow()
+
+    fun updateLocation(latitude: Double, longitude: Double) {
+        _location.value = Pair(latitude, longitude)
+    }
+
     // Estado para las sugerencias y el texto de búsqueda
     val suggestions = mutableStateListOf<String>()
-    val searchQuery = mutableStateOf("")
-    val address = mutableStateOf("")
 
     // Estado para almacenar las coordenadas obtenidas
     private val _coordinates = mutableStateOf<GeocodeResponseToCordenates?>(null)
@@ -65,7 +91,10 @@ class AutocompleteViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     _restaurants.value = response.body() ?: emptyList()
                 } else {
-                    Log.e("Autocomplete", "Error en la respuesta: ${response.errorBody()?.string()}")
+                    Log.e(
+                        "Autocomplete",
+                        "Error en la respuesta: ${response.errorBody()?.string()}"
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("Autocomplete", "Error en la llamada: ${e.message}")
@@ -73,7 +102,10 @@ class AutocompleteViewModel : ViewModel() {
         }
     }
 
-    fun fetchCoordinates(address: String, onSuccess: (latitude: Double, longitude: Double) -> Unit) {
+    fun fetchCoordinates(
+        address: String,
+        onSuccess: (latitude: Double, longitude: Double) -> Unit
+    ) {
         val request = AddressRequest(address)
         val call = RetrofitInstance.api.getCoordinates(request)
 
@@ -99,4 +131,30 @@ class AutocompleteViewModel : ViewModel() {
             }
         })
     }
+
+    fun sendCoordinatesToBackend(lat: Double, lon: Double, token: String) {
+        val request = GeocodeRequest(lat, lon)
+
+        Log.d("API", "Sending coordinates: Latitude = $lat, Longitude = $lon")
+
+        api.sendCoordinates(request, token).enqueue(object : Callback<GeocodeResponse> {
+            override fun onResponse(
+                call: Call<GeocodeResponse>,
+                response: Response<GeocodeResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val address = response.body()?.address
+                    println("Address received: $address")
+                } else {
+                    println("Server response error: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<GeocodeResponse>, t: Throwable) {
+                println("Failed to connect to the server: ${t.message}")
+            }
+        })
+    }
+
 }
+

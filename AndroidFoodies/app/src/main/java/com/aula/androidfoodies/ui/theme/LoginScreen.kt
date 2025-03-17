@@ -1,4 +1,5 @@
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -14,19 +15,26 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AuthViewModel
+import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
 
 
 @Composable
-fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel = viewModel()) {
+fun LoginScreen(
+    navController: NavHostController,
+    authViewModel: AuthViewModel = viewModel(),
+    autocompleteViewModel: AutocompleteViewModel
+) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var resultMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val location by autocompleteViewModel.location.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -82,9 +90,14 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel =
                         authViewModel.login(
                             username = username,
                             password = password,
-                            onSuccess = { token->
+                            onSuccess = { token ->
                                 resultMessage = "Login successful"
                                 TokenManager.saveToken(context, token)
+                                Log.i("Auth", "Token: $token")
+                                location?.let { (lat, lon) ->
+                                    autocompleteViewModel.sendCoordinatesToBackend(lat, lon, token)
+                                }
+
 
                                 navController.navigate("location")
                             },
@@ -128,10 +141,4 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel =
                 }
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen(navController = rememberNavController()) // Use a sample ViewModel instance
 }

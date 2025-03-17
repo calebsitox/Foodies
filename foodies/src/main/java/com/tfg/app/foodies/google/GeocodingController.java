@@ -122,9 +122,12 @@ public class GeocodingController {
 	@PostMapping("/location/geocode")
 	public ResponseEntity<?> getGeocode(@RequestBody GeocodeRequest request, @RequestHeader("Authorization")  String token) {
 		
-		Long userByToken = jwtService.extractUsername(token);
+	    LOGGER.info("Received location: " + request.getLatitude() + ", " + request.getLongitude());
+	    LOGGER.info("Received token: " + token);
 		
-		Optional<User> user = userRepository.findUserByUserId(userByToken);
+		String userByToken = jwtService.extractUsername(token);
+		
+		Optional<User> user = userRepository.findByUsername(userByToken);
 		if (user.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
 		}

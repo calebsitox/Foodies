@@ -25,8 +25,8 @@ public class JwtService {
 		this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 	}
 
-	public Long extractUsername(String token) {
-		return Long.parseLong(extractClaim(token, Claims::getSubject));
+	public String extractUsername(String token) {
+		return extractClaim(token, Claims::getSubject);
 	}
 
 	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
