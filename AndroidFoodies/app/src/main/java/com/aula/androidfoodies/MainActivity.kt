@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun sendCoordinatesToBackend(lat: Double, lon: Double) {
+    fun sendCoordinatesToBackend(lat: Double, lon: Double,token: String) {
         val request = GeocodeRequest(lat, lon)
 
         Log.d("API", "Enviando coordenadas: Latitud = $lat, Longitud = $lon")

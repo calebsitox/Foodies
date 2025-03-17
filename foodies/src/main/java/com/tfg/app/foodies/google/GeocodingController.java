@@ -22,8 +22,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tfg.app.foodies.config.JwtService;
 import com.tfg.app.foodies.dtos.GeocodeRequest;
-import com.tfg.app.foodies.dtos.GeocodeRequestUser;
 import com.tfg.app.foodies.entities.Location;
 import com.tfg.app.foodies.entities.User;
 import com.tfg.app.foodies.repository.LocationRepository;
@@ -46,6 +46,9 @@ public class GeocodingController {
 
 	@Value("${google.api.key}")
 	private String apiKey;
+	
+	@Autowired
+	private JwtService jwtService;
 	
 	@Autowired
 	private LocationRepository locationRepository;
@@ -117,13 +120,14 @@ public class GeocodingController {
 	}
 
 	@PostMapping("/location/geocode")
-	public ResponseEntity<?> getGeocode(@RequestBody GeocodeRequestUser request, @RequestHeader("Authorization")  String token) {
+	public ResponseEntity<?> getGeocode(@RequestBody GeocodeRequest request, @RequestHeader("Authorization")  String token) {
 		
-		Optional<User> user = userRepository.findUserByUserId(request.getUserId());
+		Long userByToken = jwtService.extractUsername(token);
+		
+		Optional<User> user = userRepository.findUserByUserId(userByToken);
 		if (user.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
 		}
-
 
 		String url = GOOGLE_GEOCODING_API_URL + "?latlng=" + request.getLatitude() + "," + request.getLongitude()
 				+ "&key=" + API_KEY;
