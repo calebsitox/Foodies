@@ -34,6 +34,12 @@ public class Restaurant {
 	
 	private double longitude;
 	
+	private double raiting;
+	
+	private String types;
+	
+	private String phothoReference;
+	
     @ManyToMany(mappedBy = "restaurants") 
     private Collection<User> users;
 	
