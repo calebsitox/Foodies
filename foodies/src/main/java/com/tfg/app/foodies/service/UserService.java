@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.tfg.app.foodies.dtos.MailDto;
 import com.tfg.app.foodies.entities.User;
 import com.tfg.app.foodies.repository.UserRepository;
 
@@ -20,7 +19,6 @@ public class UserService {
 
 	private User user;
 
-	private MailDto mailDto;
 
 	@Autowired
 	private final UserRepository userRepository;

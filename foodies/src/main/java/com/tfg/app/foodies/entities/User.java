@@ -51,6 +51,14 @@ public class User {
     )
     private Collection<Role> roles;
     
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "restaurant_user",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "restaurant_id")
+    )
+    private Collection<Restaurant> restaurants;
+    
     public Long getId() {
         return id;
     }
