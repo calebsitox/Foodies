@@ -42,8 +42,6 @@ public class GeocodingController {
 
 	private static final String GOOGLE_GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json";
 
-	private static final String API_KEY = "AIzaSyCNSEbqAUraUirf4YqRBbdxflyysTWWx6c";
-
 	@Value("${google.api.key}")
 	private String apiKey;
 	
@@ -65,7 +63,7 @@ public class GeocodingController {
 			return ResponseEntity.badRequest().body("Error: Coordenadas inválidas");
 		}
 		String url = GOOGLE_GEOCODING_API_URL + "?latlng=" + request.getLatitude() + ", " + request.getLongitude()
-				+ "&key=" + API_KEY;
+				+ "&key=" + apiKey;
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -92,7 +90,7 @@ public class GeocodingController {
 
 			// Construir la URL codificando el parámetro 'address'
 			String url = GOOGLE_GEOCODING_API_URL + "?address=" + URLEncoder.encode(address, StandardCharsets.UTF_8)
-					+ "&key=" + API_KEY;
+					+ "&key=" + apiKey;
 
 			// Realizar la solicitud GET a la API de Google
 			RestTemplate restTemplate = new RestTemplate();
@@ -133,7 +131,7 @@ public class GeocodingController {
 		}
 
 		String url = GOOGLE_GEOCODING_API_URL + "?latlng=" + request.getLatitude() + "," + request.getLongitude()
-				+ "&key=" + API_KEY;
+				+ "&key=" + apiKey;
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
