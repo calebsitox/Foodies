@@ -1,27 +1,24 @@
 package com.aula.androidfoodies.service
 
+import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.AutocompleteResponse
 import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.GeocodeResponse
+import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.model.LoginRequest
-import com.aula.androidfoodies.model.Message
 import com.aula.androidfoodies.model.RegisterRequest
 import com.aula.androidfoodies.model.Security
-import okhttp3.ResponseBody
-
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.Body;
+import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.POST;
+import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 
 interface ApiService {
-
-
 
     @POST("api/auth/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<Security>
@@ -42,10 +39,14 @@ interface ApiService {
     ): Call<String>
 
 
-    @POST("api/geocode")
-    fun sendCoordinates(@Body request: GeocodeRequest): Call<GeocodeResponse>
+    @POST("api/location/geocode")
+    fun sendCoordinates(
+        @Body request: GeocodeRequest,
+        @Header("Authorization") token: String
+    ): Call<GeocodeResponse>
 
-    @GET("/places/name/directions")
+
+    @GET("/api/places/name/directions")
     suspend fun fetchNearbyRestaurants(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double
@@ -53,9 +54,10 @@ interface ApiService {
 
     @GET("/api/autocomplete")
     suspend fun getAutocomplete(
-        @Query("input") input: String,
-        @Query("sessionToken") sessionToken: String
+        @Query("input") input: String
     ): Response<AutocompleteResponse>
 
-    
+    @GET("api/geocode/addressToCoordinates")
+    fun getCoordinates(@Query("address") request: AddressRequest): Call<GeocodeResponseToCordenates>
+
 }

@@ -1,56 +1,60 @@
 package com.tfg.app.foodies.google;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tfg.app.foodies.config.JwtService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/autocomplete")
+@RequestMapping("/api")
+@RequiredArgsConstructor
 public class AutocompleteController {
-	
-	
-	private JwtService jwtService;
 
-    private static final String GOOGLE_AUTOCOMPLETE_API_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-    private static final String API_KEY = "AIzaSyCNSEbqAUraUirf4YqRBbdxflyysTWWx6c"; // Reemplaza con tu API key
+	private static final Logger LOGGER = LoggerFactory.getLogger(AutocompleteController.class);
 
-    @PostMapping
-    public ResponseEntity<JsonNode> getAutocomplete(@RequestHeader(value = "Authorization", required = false) String authHeader, @RequestBody Map<String, Object> requestBody) throws Exception {
-    	
-    	//String token = authHeader.replace("Bearer ", "");
-        // Agregar la API key en la URL
-        String url = GOOGLE_AUTOCOMPLETE_API_URL + "?key=" + API_KEY;
-        
-        // Configuramos los headers para indicar que se enviará JSON
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        
+	private static final String GOOGLE_AUTOCOMPLETE_API_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
 
-        // Se crea el entity con el cuerpo de la petición
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-        
-        // Se hace la llamada POST a la API de Google
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-        
-        // Convertimos la respuesta a JsonNode para mayor facilidad
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonResponse = mapper.readTree(response.getBody());
-        
-        return ResponseEntity.ok(jsonResponse);
-    }
+	@Value("${google.api.key}")
+	private String apiKey;
+
+	@GetMapping("/autocomplete")
+	public ResponseEntity<JsonNode> getAutocomplete(@RequestParam("input") String input) {
+		try {
+			// Codificar la dirección correctamente en la URL
+			String url = GOOGLE_AUTOCOMPLETE_API_URL + "?input=" + URLEncoder.encode(input, StandardCharsets.UTF_8)
+					+ "&key=" + apiKey;
+
+			// Realizar la solicitud GET a la API de Google
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+			// Convertir la respuesta a JsonNode para facilitar su manejo
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode jsonResponse = mapper.readTree(response.getBody());
+
+			return ResponseEntity.ok(jsonResponse);
+		} catch (Exception e) {
+			LOGGER.error("Error al obtener sugerencias de autocompletado", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
 }

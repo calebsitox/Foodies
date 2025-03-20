@@ -1,5 +1,6 @@
 package com.aula.androidfoodies.ui.theme
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,10 +62,10 @@ fun LocationSearchScreen(
                         .clickable {
                             // Actualiza el campo de búsqueda y obtiene coordenadas
                             searchQuery.value = suggestion
-                            viewModel.adressToCordenates(suggestion) { geoResponse ->
-                                geoResponse?.let {
-                                    viewModel.fetchNearbyRestaurants(it.latitude, it.longitude)
-                                }
+                            viewModel.fetchCoordinates(suggestion) { latitude, longitude ->
+                                    // Usa las coordenadas obtenidas para buscar restaurantes cercanos
+                                    viewModel.fetchNearbyRestaurants(latitude, longitude)
+
                             }
                         },
                     elevation = CardDefaults.cardElevation(4.dp)

@@ -1,6 +1,7 @@
 package com.tfg.app.foodies.config;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -16,14 +17,14 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+	
+    private static final long EXPIRATION_TIME = 10 * 60 * 60 * 1000; // 10 horas
 	private final SecretKey secretKey;
 
 	public JwtService() {
-		// Genera una clave segura para HS256
 		this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 	}
 
-	// Extraer el username del token
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
@@ -38,13 +39,11 @@ public class JwtService {
 				.build().parseClaimsJws(token).getBody();
 	}
 
-	// Validar si el token es correcto
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = extractUsername(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
-	// Comprobar si el token ha expirado
 	private Boolean isTokenExpired(String token) {
 		return extractExpiration(token).before(new Date());
 	}
@@ -53,18 +52,20 @@ public class JwtService {
 		return extractClaim(token, Claims::getExpiration);
 	}
 
-	// Generar un nuevo token
-	public String generateToken(UserDetails userDetails) {
-		return Jwts.builder().setSubject(userDetails.getUsername()).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
-				.signWith(secretKey, SignatureAlgorithm.HS256) // Firma usando la clave
-				.compact();
-	}
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities()); // Agregar roles como claim
+        return createToken(claims, userDetails.getUsername());
+    }
 
-	private String createToken(Map<String, Object> claims, String subject) {
-		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // Expiración de 10 horas
-				.signWith(secretKey, SignatureAlgorithm.HS256) // Firma con SecretKey
-				.compact();
-	}
+    private String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+            .setClaims(claims) // Claims personalizados
+            .setSubject(subject) // Subject (usuario)
+            .setIssuedAt(new Date()) // Fecha de emisión
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expira en 10 horas
+            .signWith(secretKey, SignatureAlgorithm.HS256) // Firma usando la clave secreta
+            .compact();
+    }
+	
 }
