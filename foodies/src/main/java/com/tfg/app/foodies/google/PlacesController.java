@@ -7,9 +7,12 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tfg.app.foodies.dtos.GeocodeRequest;
 import com.tfg.app.foodies.entities.Restaurant;
+import com.tfg.app.foodies.repository.RestaurantRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +36,9 @@ public class PlacesController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutocompleteController.class);
 	
 	private static final String GOOGLE_PLACES_API_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+	
+	@Autowired
+	private RestaurantRepository restaurantRepository;
 	
 	@Value("${google.api.key}")
 	private String apiKey;
@@ -47,9 +55,9 @@ public class PlacesController {
 	}
 
 	@GetMapping("/places/name/directions")
-	public ResponseEntity<List<Map<String, String>>> getNearbyRestaurantsNameDirections(@RequestParam double latitude,
-			@RequestParam double longitude) throws JsonMappingException, JsonProcessingException {
-		String url = GOOGLE_PLACES_API_URL + "?location=" + latitude + "," + longitude
+	public ResponseEntity<List<Map<?, ?>>> getNearbyRestaurantsNameDirections(
+			@RequestBody  GeocodeRequest request ,@RequestHeader("Authorization") String token) throws JsonMappingException, JsonProcessingException {
+		String url = GOOGLE_PLACES_API_URL + "?location=" + request.getLatitude() + "," + request.getLongitude()
 				+ "&radius=1000&type=restaurant&key=" + apiKey;
 
 		RestTemplate restTemplate = new RestTemplate();
@@ -58,9 +66,10 @@ public class PlacesController {
 		// Parsear JSON
 		JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
 		LOGGER.info("JSON response parsed successfully.");
-		List<Map<String, String>> placesList = new ArrayList<>();
+		List<Map<?, ?>> placesList = new ArrayList<>();
 
 		for (JsonNode result : jsonNode.path("results")) {
+			StringBuilder sb = new StringBuilder();
 		    LOGGER.info("Processing a new restaurant entry.");
 		    List<String> typesList = new ArrayList<>();
 		    Restaurant restaurant = new Restaurant();
@@ -87,7 +96,8 @@ public class PlacesController {
 		    if (firstPhoto != null) {
 		        String photoReference = firstPhoto.path("photo_reference").asText();
 		        LOGGER.info("Photo reference: " + photoReference);
-		        restaurant.setPhothoReference(photoReference);
+		        restaurant.setPhotoReference(photoReference);
+		       place.put("photoReference", photoReference);
 		    } else {
 		        LOGGER.info("No photo available for this restaurant.");
 		    }
@@ -100,9 +110,11 @@ public class PlacesController {
 		    if (result.has("types") && result.path("types").isArray()) {
 		        for (JsonNode typeNode : result.path("types")) {
 		            typesList.add(typeNode.asText());
+		            sb.append(typeNode);
 		        }
 		        LOGGER.info("Types: " + typesList);
 		        restaurant.setTypes(typesList);
+		        place.put("Types", sb.toString().trim());
 		    } else {
 		        LOGGER.info("No hay tipos disponibles.");
 		    }
@@ -110,8 +122,9 @@ public class PlacesController {
 		    // Agregamos la información al listado de lugares que se enviará al frontend
 		    placesList.add(place);
 		    LOGGER.info("Restaurant added to the list.");
+		    restaurantRepository.save(restaurant);
 		}
-
+		
 		return ResponseEntity.ok(placesList);
 	}
 

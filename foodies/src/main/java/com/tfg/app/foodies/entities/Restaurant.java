@@ -3,11 +3,13 @@ package com.tfg.app.foodies.entities;
 import java.util.Collection;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
@@ -27,8 +29,9 @@ import lombok.Setter;
 		@UniqueConstraint(columnNames = { "latitude", "longitude", "address" }, name = "unique_location") })
 public class Restaurant {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "restaurant_seq")
+    @SequenceGenerator(name = "restaurant_seq", sequenceName = "my_sequence", allocationSize = 1)
 	private Long id;
 	
 	@NotNull
@@ -48,7 +51,8 @@ public class Restaurant {
 
 	private List<String> types;
 
-	private String phothoReference;
+	@Column(length = 1000) 
+	private String photoReference;
 
 	@ManyToMany(mappedBy = "restaurants")
 	private Collection<User> users;
@@ -110,12 +114,12 @@ public class Restaurant {
 		this.types = types;
 	}
 
-	public String getPhothoReference() {
-		return phothoReference;
+	public String getPhotoReference() {
+		return photoReference;
 	}
 
-	public void setPhothoReference(String phothoReference) {
-		this.phothoReference = phothoReference;
+	public void setPhotoReference(String photoReference) {
+		this.photoReference = photoReference;
 	}
 
 	public Collection<User> getUsers() {
