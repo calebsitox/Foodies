@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.GeocodeRequest
@@ -20,6 +21,7 @@ import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.retrofit.RetrofitInstance
 import com.aula.androidfoodies.retrofit.RetrofitInstance.api
 import com.aula.androidfoodies.service.ApiService
+import com.aula.androidfoodies.utils.TokenManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -84,10 +86,12 @@ class AutocompleteViewModel : ViewModel() {
         }
     }
 
-    fun fetchNearbyRestaurants(latitude: Double, longitude: Double) {
+    fun fetchNearbyRestaurants(latitude: Double, longitude: Double, token: String) {
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.api.fetchNearbyRestaurants(latitude, longitude)
+
+                val geocodeRequest = GeocodeRequest(latitude, longitude)
+                val response = RetrofitInstance.api.fetchNearbyRestaurants(geocodeRequest, token )
                 if (response.isSuccessful) {
                     _restaurants.value = response.body() ?: emptyList()
                 } else {

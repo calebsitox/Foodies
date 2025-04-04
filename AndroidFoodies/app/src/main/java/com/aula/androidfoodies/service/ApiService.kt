@@ -46,10 +46,10 @@ interface ApiService {
     ): Call<GeocodeResponse>
 
 
-    @GET("/api/places/name/directions")
+    @POST("/api/places/name/directions")
     suspend fun fetchNearbyRestaurants(
-        @Query("latitude") latitude: Double,
-        @Query("longitude") longitude: Double
+        @Body request: GeocodeRequest,
+        @Header("Authorization") token: String
     ): Response<List<Map<String, String>>>
 
     @GET("/api/autocomplete")

@@ -21,9 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.aula.androidfoodies.model.GeocodeRequest
+import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
 
 @Composable
@@ -33,6 +36,8 @@ fun LocationSearchScreen(
 ) {
     val searchQuery = remember { mutableStateOf("") }
     val restaurants = viewModel.restaurants.value
+    val context = LocalContext.current
+    val token = TokenManager.getToken(context)
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -64,7 +69,9 @@ fun LocationSearchScreen(
                             searchQuery.value = suggestion
                             viewModel.fetchCoordinates(suggestion) { latitude, longitude ->
                                     // Usa las coordenadas obtenidas para buscar restaurantes cercanos
-                                    viewModel.fetchNearbyRestaurants(latitude, longitude)
+                                if (token != null) {
+                                    viewModel.fetchNearbyRestaurants(latitude, longitude, token)
+                                }
 
                             }
                         },
