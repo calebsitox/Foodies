@@ -51,7 +51,15 @@ public class User {
     )
     private Collection<Role> roles;
     
-    @ManyToMany(fetch = FetchType.EAGER)
+    public Collection<Restaurant> getRestaurants() {
+		return restaurants;
+	}
+
+	public void setRestaurants(Collection<Restaurant> restaurants) {
+		this.restaurants = restaurants;
+	}
+
+	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "restaurant_user",
         joinColumns = @JoinColumn(name = "user_id"),

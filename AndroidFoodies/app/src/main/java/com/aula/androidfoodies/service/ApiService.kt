@@ -45,7 +45,6 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Call<GeocodeResponse>
 
-
     @POST("/api/places/name/directions")
     suspend fun fetchNearbyRestaurants(
         @Body request: GeocodeRequest,
