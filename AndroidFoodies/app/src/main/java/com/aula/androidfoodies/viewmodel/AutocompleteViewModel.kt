@@ -27,6 +27,8 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -159,6 +161,18 @@ class AutocompleteViewModel : ViewModel() {
             }
         })
     }
+
+    fun fetchPhotoUrl(photoReference: String, token: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val url = RetrofitInstance.api.getUrlPhoto(photoReference, token)
+                println("URL de la foto: $url")
+            } catch (e: Exception) {
+                println("Error al obtener la URL: ${e.message}")
+            }
+        }
+    }
+
 
 }
 

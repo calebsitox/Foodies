@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfg.app.foodies.dtos.GeocodeRequest;
 import com.tfg.app.foodies.entities.Restaurant;
 import com.tfg.app.foodies.repository.RestaurantRepository;
+import com.tfg.app.foodies.service.RestaurantService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +38,9 @@ public class PlacesController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutocompleteController.class);
 	
 	private static final String GOOGLE_PLACES_API_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+	
+	@Autowired
+	private RestaurantService restaurantService;
 	
 	@Autowired
 	private RestaurantRepository restaurantRepository;
@@ -63,6 +66,13 @@ public class PlacesController {
 				+ "&radius=1000&type=restaurant&key=" + apiKey;
 
 		RestTemplate restTemplate = new RestTemplate();
+		
+		List<Restaurant> restaurantByQuery = restaurantService.locateResaturantByCoordinates(request, token);
+		 
+		if(restaurantByQuery.size() > 6) {
+			
+		}
+		
 		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
 		// Parsear JSON

@@ -38,6 +38,11 @@ interface ApiService {
         @Body newPassword: String
     ): Call<String>
 
+    @POST("api/photo")
+    suspend fun getUrlPhoto(
+        @Body photoReference: String,
+        @Header("Authorization") token: String
+    ): String
 
     @POST("api/location/geocode")
     fun sendCoordinates(
