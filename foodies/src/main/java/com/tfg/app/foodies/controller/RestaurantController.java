@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -30,10 +29,10 @@ public class RestaurantController {
 		return new ResponseEntity<>("Like done Good", HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/nearby")
-	public List<Restaurant> getNearbyRestaurants(@RequestBody GeocodeRequest geocodeRequest,
+	@PostMapping("/nearby")
+	public List<Restaurant> getNearbyRestaurants(@RequestBody GeocodeRequest restaurantRequest ,
 			@RequestHeader("Authorization") String token) {
-		return restaurantService.locateResaturantByCoordinates(geocodeRequest, token);
+		return restaurantService.locateResaturantByCoordinates(restaurantRequest, token);
 	}
 
 }

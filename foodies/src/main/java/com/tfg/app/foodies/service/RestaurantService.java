@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.tfg.app.foodies.dtos.GeocodeRequest;
+import com.tfg.app.foodies.dtos.RestaurantRequest;
 import com.tfg.app.foodies.entities.Restaurant;
 import com.tfg.app.foodies.entities.User;
 import com.tfg.app.foodies.repository.RestaurantRepository;
@@ -45,15 +46,14 @@ public class RestaurantService {
 	}
 
 	@Transactional
-	public List<Restaurant> locateResaturantByCoordinates(@RequestBody GeocodeRequest geocodeRequest,
-			@RequestHeader("Authorization") String token) {
+	public List<Restaurant> locateResaturantByCoordinates(GeocodeRequest request, String token) {
 		
-		if (Objects.isNull(geocodeRequest.getLatitude())|| Objects.isNull(geocodeRequest.getLongitude())) {
+		if (Objects.isNull(request)|| Objects.isNull(request)) {
 		    throw new IllegalArgumentException("GeocodeRequest inválido: faltan coordenadas.");
 		}
 
-		List<Restaurant> restaurants = restaurantRepository.findNearbyRestaurants(geocodeRequest.getLatitude(),
-				geocodeRequest.getLongitude());
+		List<Restaurant> restaurants = restaurantRepository.findNearbyRestaurants(request.getLatitude(),
+				request.getLongitude());
 
 		if (restaurants.isEmpty()) {
 		    return Collections.emptyList();

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfg.app.foodies.dtos.GeocodeRequest;
+import com.tfg.app.foodies.dtos.RestaurantRequest;
 import com.tfg.app.foodies.entities.Restaurant;
 import com.tfg.app.foodies.repository.RestaurantRepository;
 import com.tfg.app.foodies.service.RestaurantService;
@@ -68,17 +69,31 @@ public class PlacesController {
 		RestTemplate restTemplate = new RestTemplate();
 		
 		List<Restaurant> restaurantByQuery = restaurantService.locateResaturantByCoordinates(request, token);
-		 
-		if(restaurantByQuery.size() > 6) {
-			
+		List<Map<?, ?>> placesList = new ArrayList<>();
+
+		if (restaurantByQuery.size() > 6) {
+		    for (Restaurant result : restaurantByQuery) {
+		        Map<String, Object> placeMap = new HashMap<>();
+		        
+		        // Populate the map with restaurant details
+		        placeMap.put("name", result.getName());
+		        placeMap.put("address", result.getAddress());
+		        placeMap.put("latitude", result.getLatitude());
+		        placeMap.put("longitude", result.getLongitude());
+		        placeMap.put("photoReference", result.getPhotoReference());
+		        placeMap.put("rating", result.getRating());
+		        placeMap.put("types", result.getTypesString()); // Add any additional attributes as needed
+
+		        // Add the map to the list
+		        placesList.add(placeMap);
+		    }
+		    return ResponseEntity.ok(placesList);
 		}
-		
 		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
 		// Parsear JSON
 		JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
 		LOGGER.info("JSON response parsed successfully.");
-		List<Map<?, ?>> placesList = new ArrayList<>();
 
 		for (JsonNode result : jsonNode.path("results")) {
 			StringBuilder sb = new StringBuilder();
@@ -125,7 +140,7 @@ public class PlacesController {
 		            sb.append(typeNode);
 		        }
 		        LOGGER.info("Types: " + typesList);
-		        restaurant.setTypes(typesList);
+		        restaurant.setTypesList(typesList);
 		        place.put("Types", sb.toString().trim());
 		    } else {
 		        LOGGER.info("No hay tipos disponibles.");

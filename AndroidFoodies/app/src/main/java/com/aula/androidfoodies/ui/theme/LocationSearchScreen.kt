@@ -1,5 +1,6 @@
 package com.aula.androidfoodies.ui.theme
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -125,10 +126,11 @@ fun LocationSearchScreen(
                                     photoReference = imageUrl,
                                     token = token
                                 )
+                                val photoUrl = buildPhotoUrl(imageUrl)
                                 Log.d("ImageURL", "Generated URL: $url")
 
-                                AsyncImage(
-                                    model = url.toString(),
+                                DisplayPhoto(
+                                    photoUrl = photoUrl,
                                     contentDescription = "Imagen del restaurante",
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -156,20 +158,33 @@ fun LocationSearchScreen(
         }
     }
 }
+
+// Forma CORRECTA de construir la URL con parámetros
+fun buildPhotoUrl(photoRef: String): String {
+    return Uri.parse("https://maps.googleapis.com/maps/api/place/photo")
+        .buildUpon()
+        .appendQueryParameter("maxwidth", "400")
+        .appendQueryParameter("photoreference", photoRef) // No necesitas URLEncoder aquí
+        .appendQueryParameter("key", "AIzaSyCNSEbqAUraUirf4YqRBbdxflyysTWWx6c") // Tu API key
+        .build()
+        .toString()
+}
+
 @Composable
-fun AsyncImage(
-    model: String,
-    contentDescription: String,
-    modifier: Modifier = Modifier
-) {
+fun DisplayPhoto(photoUrl: String,
+                 contentDescription: String,
+                 modifier: Modifier = Modifier) {
     val painter = rememberAsyncImagePainter(
-        model = model,
+        model = photoUrl,
         placeholder = painterResource(com.google.android.libraries.places.R.drawable.quantum_ic_clear_grey600_24), // Optional placeholder
         error = painterResource(com.google.android.libraries.places.R.drawable.quantum_ic_clear_grey600_24) // Fallback on error
     )
+
     Image(
         painter = painter,
-        contentDescription = contentDescription,
-        modifier = modifier
+        contentDescription = "Restaurant Photo",
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
     )
 }

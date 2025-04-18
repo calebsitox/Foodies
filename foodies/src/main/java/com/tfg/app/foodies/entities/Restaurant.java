@@ -1,7 +1,10 @@
 package com.tfg.app.foodies.entities;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import org.springframework.data.annotation.Transient;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -48,13 +52,28 @@ public class Restaurant {
 
 	private Double rating;
 
-	private List<String> types;
+	@Column(name = "types")
+	private String typesString; // Almacena el formato crudo {a,b,c}
+	
+	@Transient
+	private List<String> typesList;
 
 	@Column(length = 1000) 
 	private String photoReference;
 
 	@ManyToMany(mappedBy = "restaurants")
 	private Collection<User> users;
+	
+	
+	@PostLoad
+	private void convertStringToArray() {
+	    if (this.typesString != null) {
+	        // Elimina llaves y divide por comas
+	        this.typesList = Arrays.asList(
+	            this.typesString.replaceAll("[{}]", "").split(",")
+	        );
+	    }
+	}
 
 	public Long getId() {
 		return id;
@@ -105,12 +124,20 @@ public class Restaurant {
 		this.rating = raiting;
 	}
 
-	public List<String> getTypes() {
-		return types;
+	public String getTypesString() {
+		return typesString;
 	}
 
-	public void setTypes(List<String> types) {
-		this.types = types;
+	public void setTypesString(String typesString) {
+		this.typesString = typesString;
+	}
+
+	public List<String> getTypesList() {
+		return typesList;
+	}
+
+	public void setTypesList(List<String> typesList) {
+		this.typesList = typesList;
 	}
 
 	public String getPhotoReference() {
