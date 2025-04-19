@@ -8,11 +8,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.tfg.app.foodies.dtos.GeocodeRequest;
-import com.tfg.app.foodies.dtos.RestaurantRequest;
+import com.tfg.app.foodies.dtos.LikeRequest;
 import com.tfg.app.foodies.entities.Restaurant;
 import com.tfg.app.foodies.entities.User;
 import com.tfg.app.foodies.repository.RestaurantRepository;
@@ -31,12 +29,11 @@ public class RestaurantService {
 	private RestaurantRepository restaurantRepository;
 
 	@Transactional
-	public void likeRestaurantUser(@RequestBody Long userId, Long restaurantId,
-			@RequestHeader("Authorization") String token) {
+	public void likeRestaurantUser(LikeRequest likeRequest) {
 
-		Optional<User> user = userRepository.findUserByUserId(userId);
+		Optional<User> user = userRepository.findUserByUserId(likeRequest.getUserId());
 
-		Restaurant restaurant = restaurantRepository.findRestaurantById(restaurantId);
+		Restaurant restaurant = restaurantRepository.findRestaurantById(likeRequest.getRestaurantId());
 
 		if (Objects.nonNull(user.get())) {
 			user.get().getRestaurants().add(restaurant);
