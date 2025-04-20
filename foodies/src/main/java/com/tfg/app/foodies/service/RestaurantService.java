@@ -58,5 +58,10 @@ public class RestaurantService {
 		return restaurants;
 
 	}
+	
+	public List<Restaurant> filterByLikedrestaurants(LikeRequest likeRequest){
+		
+		return Collections.emptyList();
+	}
 
 }

@@ -7,6 +7,7 @@ import com.aula.androidfoodies.model.GeocodeResponse
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.model.LoginRequest
 import com.aula.androidfoodies.model.RegisterRequest
+import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.model.Security
 import retrofit2.Call
 import retrofit2.Response
@@ -63,5 +64,8 @@ interface ApiService {
 
     @GET("api/geocode/addressToCoordinates")
     fun getCoordinates(@Query("address") request: AddressRequest): Call<GeocodeResponseToCordenates>
+
+    @POST("api/likeRestuarant")
+    suspend fun likeRestaurant(@Body request: RestaurantRequest)
 
 }

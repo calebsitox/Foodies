@@ -11,19 +11,22 @@ import com.tfg.app.foodies.entities.Restaurant;
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
-	
-	@Query(value = "SELECT * FROM restaurant WHERE " +
-		       "6371000 * acos(" +
-		       "GREATEST(LEAST(" +
-		       "cos(radians(:latitude)) * cos(radians(latitude)) * " +
-		       "cos(radians(longitude) - radians(:longitude)) + " +
-		       "sin(radians(:latitude)) * sin(radians(latitude)), " +
-		       "1), -1)" + // Asegura el rango [-1,1] para acos
-		       ") <= 1000", nativeQuery = true)
-		List<Restaurant> findNearbyRestaurants(
-		       @Param("latitude") double latitude,
-		       @Param("longitude") double longitude);
+
+	@Query(value = "SELECT * FROM restaurant WHERE " + "6371000 * acos(" + "GREATEST(LEAST("
+			+ "cos(radians(:latitude)) * cos(radians(latitude)) * " + "cos(radians(longitude) - radians(:longitude)) + "
+			+ "sin(radians(:latitude)) * sin(radians(latitude)), " + "1), -1)" + // Asegura el rango [-1,1] para acos
+			") <= 1000", nativeQuery = true)
+	List<Restaurant> findNearbyRestaurants(@Param("latitude") double latitude, @Param("longitude") double longitude);
 
 	@Query("SELECT r FROM Restaurant r WHERE r.id = :id")
 	Restaurant findRestaurantById(@Param("id") Long id);
+	
+	@Query("SELECT r.id FROM Restaurant r WHERE r.name = :restaurantName")
+	Long findRestaurantByName(@Param("restaurantName") String restaurantName);
+
+	@Query(value = "select * from restaurant r " + 
+	"left join restaurant_user ru on ru.restaurant_id = r.id" +
+	"where ru.user_id = :userId", nativeQuery = true)
+	List<Restaurant> findlikedRestuarantbyUsers(@Param("userId") Long userId);
+
 }

@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.aula.androidfoodies.R
 import com.aula.androidfoodies.model.GeocodeRequest
+import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
 
@@ -160,7 +161,12 @@ fun LocationSearchScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             IconButton(
-                                onClick = {},
+                                onClick = {
+                                    place[""]
+                                    val request: RestaurantRequest
+                                    viewModel.likeRestaurant(request)
+
+                                },
                                 modifier =  Modifier.align(Alignment.End)
                             ) {
                                 Icon(

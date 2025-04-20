@@ -18,6 +18,7 @@ import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.GeocodeResponse
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
+import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.retrofit.RetrofitInstance
 import com.aula.androidfoodies.retrofit.RetrofitInstance.api
 import com.aula.androidfoodies.service.ApiService
@@ -169,6 +170,16 @@ class AutocompleteViewModel : ViewModel() {
                 println("URL de la foto: $url")
             } catch (e: Exception) {
                 println("Error al obtener la URL: ${e.message}")
+            }
+        }
+    }
+
+    fun likeRestaurant(request: RestaurantRequest){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                RetrofitInstance.api.likeRestaurant(request)
+            } catch (e: Exception) {
+                Log.e("LikeRestaurantError", "Error liking restaurant", e)
             }
         }
     }
