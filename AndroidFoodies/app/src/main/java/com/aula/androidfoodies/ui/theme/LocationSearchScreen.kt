@@ -39,11 +39,13 @@ import com.aula.androidfoodies.R
 import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.utils.TokenManager
+import com.aula.androidfoodies.viewmodel.AuthViewModel
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
 
 @Composable
 fun LocationSearchScreen(
     navController: NavHostController,
+    authViewModel: AuthViewModel,
     viewModel: AutocompleteViewModel = viewModel()
 ) {
     val searchQuery = remember { mutableStateOf("") }
@@ -162,8 +164,9 @@ fun LocationSearchScreen(
 
                             IconButton(
                                 onClick = {
-                                    place[""]
-                                    val request: RestaurantRequest
+                                    val username = authViewModel.getSavedUsername()
+                                    val name= place["name"]
+                                    val request = RestaurantRequest(username.toString(), name.toString())
                                     viewModel.likeRestaurant(request)
 
                                 },

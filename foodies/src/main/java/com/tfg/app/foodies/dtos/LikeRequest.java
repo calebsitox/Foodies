@@ -5,23 +5,23 @@ import lombok.Data;
 @Data
 public class LikeRequest {
 
-	private Long userId;
+	private String userName;
 	
-	private Long restaurantId;
+	private String restaurantName;
 
-	public Long getUserId() {
-		return userId;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void seuserName(String userName) {
+		this.userName = userName;
 	}
 
-	public Long getRestaurantId() {
-		return restaurantId;
+	public String getRestaurantname() {
+		return restaurantName;
 	}
 
-	public void setRestaurantId(Long restaurantId) {
-		this.restaurantId = restaurantId;
+	public void setRestaurantId(String restaurantName) {
+		this.restaurantName = restaurantName;
 	}
 }

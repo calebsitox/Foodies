@@ -173,7 +173,6 @@ class AutocompleteViewModel : ViewModel() {
             }
         }
     }
-
     fun likeRestaurant(request: RestaurantRequest){
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -183,6 +182,7 @@ class AutocompleteViewModel : ViewModel() {
             }
         }
     }
+
 
 
 }

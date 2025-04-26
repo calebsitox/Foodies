@@ -1,31 +1,37 @@
 package com.aula.androidfoodies.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aula.androidfoodies.model.GeocodeRequest
-import com.aula.androidfoodies.model.GeocodeResponse
 import com.aula.androidfoodies.model.LoginRequest
 import com.aula.androidfoodies.model.RegisterRequest
-import com.aula.androidfoodies.model.Security
 import com.aula.androidfoodies.retrofit.RetrofitInstance
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.HttpException
-import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.awaitResponse
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import javax.inject.Inject
 
-class AuthViewModel @Inject constructor() : ViewModel() {
+class AuthViewModel @Inject constructor(private val context: Context) : ViewModel() {
+
+    var username = mutableStateOf("")
+
+    private val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+
+    fun saveUsername(newUsername: String) {
+        username.value = newUsername
+        sharedPreferences.edit().putString("username", newUsername).apply()
+        Log.d("AuthViewModel", "Username guardado: $newUsername")
+    }
+
+    fun getSavedUsername(): String? {
+        return sharedPreferences.getString("username", null)
+    }
+
     private var _email = mutableStateOf("")
     val email: State<String> = _email
 
@@ -33,8 +39,12 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     val inputCode: State<String> = _inputCode
 
     fun saveEmail(newEmail: String) {
-        Log.d("AuthViewModel", "Guardando email: $newEmail")  // Este log debe mostrar el email que estás guardando
-        _email.value = newEmail    }
+        Log.d(
+            "AuthViewModel",
+            "Guardando email: $newEmail"
+        )  // Este log debe mostrar el email que estás guardando
+        _email.value = newEmail
+    }
 
     fun saveInputCode(newInputCode: String) {
         Log.d("AuthViewModel", "Guardando código: $newInputCode") // ✅ Verificar si se actualiza
@@ -50,9 +60,11 @@ class AuthViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = RetrofitInstance.api.login(LoginRequest(username, password))
+
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     if (token != null) {
+                        saveUsername(username)
                         onSuccess(token)
                     } else {
                         onError("Token is null")
@@ -146,6 +158,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
+
     fun changePassword(
         newPassword: String,
         onSuccess: (String) -> Unit,
@@ -153,9 +166,13 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                Log.d("*********************CodeScreen", "Email: $email, Code: $inputCode") // Añadir un log para depurar
+                Log.d(
+                    "*********************CodeScreen",
+                    "Email: $email, Code: $inputCode"
+                ) // Añadir un log para depurar
                 val response =
-                    RetrofitInstance.api.setPassword(email.value, inputCode.value, newPassword).awaitResponse()
+                    RetrofitInstance.api.setPassword(email.value, inputCode.value, newPassword)
+                        .awaitResponse()
                 if (response.isSuccessful) {
                     response.body()?.let { onSuccess(it) }
                         ?: onError("El cuerpo de la respuesta es nulo")
@@ -167,6 +184,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
+
 
 }
 

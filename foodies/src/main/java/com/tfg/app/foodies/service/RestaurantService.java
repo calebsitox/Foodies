@@ -31,9 +31,11 @@ public class RestaurantService {
 	@Transactional
 	public void likeRestaurantUser(LikeRequest likeRequest) {
 
-		Optional<User> user = userRepository.findUserByUserId(likeRequest.getUserId());
+		Optional<User> user = userRepository.findByUsername(likeRequest.getUserName());
 
-		Restaurant restaurant = restaurantRepository.findRestaurantById(likeRequest.getRestaurantId());
+		Long resturantId = restaurantRepository.findRestaurantByName(likeRequest.getRestaurantname());
+
+		Restaurant restaurant = restaurantRepository.findRestaurantById(resturantId);
 
 		if (Objects.nonNull(user.get())) {
 			user.get().getRestaurants().add(restaurant);
@@ -44,24 +46,33 @@ public class RestaurantService {
 
 	@Transactional
 	public List<Restaurant> locateResaturantByCoordinates(GeocodeRequest request, String token) {
-		
-		if (Objects.isNull(request)|| Objects.isNull(request)) {
-		    throw new IllegalArgumentException("GeocodeRequest inválido: faltan coordenadas.");
+
+		if (Objects.isNull(request) || Objects.isNull(request)) {
+			throw new IllegalArgumentException("GeocodeRequest inválido: faltan coordenadas.");
 		}
 
 		List<Restaurant> restaurants = restaurantRepository.findNearbyRestaurants(request.getLatitude(),
 				request.getLongitude());
 
 		if (restaurants.isEmpty()) {
-		    return Collections.emptyList();
+			return Collections.emptyList();
 		}
 		return restaurants;
 
 	}
-	
-	public List<Restaurant> filterByLikedrestaurants(LikeRequest likeRequest){
-		
+
+	@Transactional
+	public List<Restaurant> filterByLikedrestaurants(LikeRequest likeRequest) {
+
 		return Collections.emptyList();
+	}
+
+	public Long getRestaurantId(String resaturantName) {
+		if (Objects.nonNull(resaturantName)) {
+			Long resturantId = restaurantRepository.findRestaurantByName(resaturantName);
+			return resturantId;
+		}
+		return null;
 	}
 
 }
