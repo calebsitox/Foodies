@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
             composable("login") { LoginScreen(navController, authViewModel, locationViewModel) }
             composable("register") { RegisterScreen(navController) }
             composable("sendEmail") { SendEmailScreen(navController) }
-            composable("location") { LocationSearchScreen(navController) }
+            composable("location") { LocationSearchScreen( locationViewModel, authViewModel) }
         }
     }
 

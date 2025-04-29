@@ -145,11 +145,13 @@ public class PlacesController {
 		    } else {
 		        LOGGER.info("No hay tipos disponibles.");
 		    }
-		    
+		    List<Restaurant> existing = this.restaurantRepository.findRestaurantsByCoordenates(lat, lon);
+		    if (existing.isEmpty()) {
+		    	LOGGER.info("Restaurant added to the list.");
+			    restaurantRepository.save(restaurant);
+		    }
 		    // Agregamos la información al listado de lugares que se enviará al frontend
-		    placesList.add(place);
-		    LOGGER.info("Restaurant added to the list.");
-		    restaurantRepository.save(restaurant);
+		    placesList.add(place);   
 		}
 		
 		return ResponseEntity.ok(placesList);

@@ -173,10 +173,10 @@ class AutocompleteViewModel : ViewModel() {
             }
         }
     }
-    fun likeRestaurant(request: RestaurantRequest){
+    fun likeRestaurant(token: String, request: RestaurantRequest){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                RetrofitInstance.api.likeRestaurant(request)
+                RetrofitInstance.api.likeRestaurant(token, request)
             } catch (e: Exception) {
                 Log.e("LikeRestaurantError", "Error liking restaurant", e)
             }

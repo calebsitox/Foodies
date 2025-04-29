@@ -28,5 +28,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 	"left join restaurant_user ru on ru.restaurant_id = r.id" +
 	"where ru.user_id = :userId", nativeQuery = true)
 	List<Restaurant> findlikedRestuarantbyUsers(@Param("userId") Long userId);
-
+	
+	@Query(value = "select * from restaurant r where r.latitude = :latitude and r.longitude = :longitude", nativeQuery = true)
+	List<Restaurant> findRestaurantsByCoordenates(@Param("latitude") double latitude, @Param("longitude") double longitude);
 }

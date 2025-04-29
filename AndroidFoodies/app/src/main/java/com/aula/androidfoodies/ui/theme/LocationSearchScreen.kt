@@ -1,5 +1,6 @@
 package com.aula.androidfoodies.ui.theme
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -27,7 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,8 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.aula.androidfoodies.R
-import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AuthViewModel
@@ -44,9 +42,8 @@ import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
 
 @Composable
 fun LocationSearchScreen(
-    navController: NavHostController,
-    authViewModel: AuthViewModel,
-    viewModel: AutocompleteViewModel = viewModel()
+    viewModel: AutocompleteViewModel = viewModel(),
+    authViewModel: AuthViewModel
 ) {
     val searchQuery = remember { mutableStateOf("") }
     val restaurants = viewModel.restaurants.value
@@ -164,10 +161,10 @@ fun LocationSearchScreen(
 
                             IconButton(
                                 onClick = {
-                                    val username = authViewModel.getSavedUsername()
                                     val name= place["name"]
+                                    val username = authViewModel.loadUsername(context)
                                     val request = RestaurantRequest(username.toString(), name.toString())
-                                    viewModel.likeRestaurant(request)
+                                    viewModel.likeRestaurant(token.toString(), request)
 
                                 },
                                 modifier =  Modifier.align(Alignment.End)

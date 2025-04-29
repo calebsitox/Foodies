@@ -97,7 +97,7 @@ fun LoginScreen(
                                 location?.let { (lat, lon) ->
                                     autocompleteViewModel.sendCoordinatesToBackend(lat, lon, token)
                                 }
-
+                                authViewModel.saveUsername(context, username)
 
                                 navController.navigate("location")
                             },

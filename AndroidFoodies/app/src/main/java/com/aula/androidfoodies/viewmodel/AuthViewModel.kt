@@ -1,6 +1,7 @@
 package com.aula.androidfoodies.viewmodel
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -14,22 +15,21 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import retrofit2.awaitResponse
 import java.io.IOException
-import javax.inject.Inject
 
-class AuthViewModel @Inject constructor(private val context: Context) : ViewModel() {
+class AuthViewModel () : ViewModel() {
+    private var _username = mutableStateOf("")
+    val username: State<String> get() = _username
 
-    var username = mutableStateOf("")
-
-    private val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-
-    fun saveUsername(newUsername: String) {
-        username.value = newUsername
-        sharedPreferences.edit().putString("username", newUsername).apply()
-        Log.d("AuthViewModel", "Username guardado: $newUsername")
+    fun loadUsername(context: Context) {
+        val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        _username.value = prefs.getString("username", "") ?: ""
     }
 
-    fun getSavedUsername(): String? {
-        return sharedPreferences.getString("username", null)
+    fun saveUsername(context: Context, newUsername: String) {
+        _username.value = newUsername
+        val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("username", newUsername).apply()
+        Log.d("AuthViewModel", "Username guardado: $newUsername")
     }
 
     private var _email = mutableStateOf("")
@@ -64,7 +64,6 @@ class AuthViewModel @Inject constructor(private val context: Context) : ViewMode
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     if (token != null) {
-                        saveUsername(username)
                         onSuccess(token)
                     } else {
                         onError("Token is null")

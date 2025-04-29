@@ -66,6 +66,9 @@ interface ApiService {
     fun getCoordinates(@Query("address") request: AddressRequest): Call<GeocodeResponseToCordenates>
 
     @POST("api/likeRestuarant")
-    suspend fun likeRestaurant(@Body request: RestaurantRequest)
+    suspend fun likeRestaurant(
+        @Header("Authorization") token: String,
+        @Body request: RestaurantRequest
+    )
 
 }
