@@ -17,6 +17,12 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 			+ "sin(radians(:latitude)) * sin(radians(latitude)), " + "1), -1)" + // Asegura el rango [-1,1] para acos
 			") <= 1000", nativeQuery = true)
 	List<Restaurant> findNearbyRestaurants(@Param("latitude") double latitude, @Param("longitude") double longitude);
+	
+	@Query(value = "SELECT * FROM restaurant r WHERE :type = any(r.types_list) and 6371000 * acos(" + "GREATEST(LEAST("
+			+ "cos(radians(:latitude)) * cos(radians(latitude)) * " + "cos(radians(longitude) - radians(:longitude)) + "
+			+ "sin(radians(:latitude)) * sin(radians(latitude)), " + "1), -1)" + // Asegura el rango [-1,1] para acos
+			") <= 1000", nativeQuery = true)
+	List<Restaurant> findNearbyRestaurantsAndType(@Param("type") String type, @Param("latitude") double latitude, @Param("longitude") double longitude);
 
 	@Query("SELECT r FROM Restaurant r WHERE r.id = :id")
 	Restaurant findRestaurantById(@Param("id") Long id);

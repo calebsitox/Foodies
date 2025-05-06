@@ -33,11 +33,11 @@ public class RestaurantService {
 
 		Optional<User> user = userRepository.findByUsername(likeRequest.getUserName());
 
-		Long resturantId = restaurantRepository.findRestaurantByName(likeRequest.getRestaurantname());
+		List<Restaurant> resturantList= restaurantRepository.findRestaurantsByCoordenates(likeRequest.getLat(), likeRequest.getLon());
 
-		Restaurant restaurant = restaurantRepository.findRestaurantById(resturantId);
+		Restaurant restaurant = resturantList.get(0);
 
-		if (Objects.nonNull(user.get())) {
+		if (user.isPresent()) {
 			user.get().getRestaurants().add(restaurant);
 			restaurant.getUsers().add(user.get());
 		}

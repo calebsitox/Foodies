@@ -20,10 +20,11 @@ class AuthViewModel () : ViewModel() {
     private var _username = mutableStateOf("")
     val username: State<String> get() = _username
 
-    fun loadUsername(context: Context) {
+    fun loadUsername(context: Context): String{
         val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
-        _username.value = prefs.getString("username", "") ?: ""
+        return prefs.getString("username", "") ?: ""
     }
+
 
     fun saveUsername(context: Context, newUsername: String) {
         _username.value = newUsername

@@ -7,7 +7,9 @@ public class LikeRequest {
 
 	private String userName;
 	
-	private String restaurantName;
+	private Double lat;
+	
+	private Double lon;
 
 	public String getUserName() {
 		return userName;
@@ -17,11 +19,24 @@ public class LikeRequest {
 		this.userName = userName;
 	}
 
-	public String getRestaurantname() {
-		return restaurantName;
+	public Double getLat() {
+		return lat;
 	}
 
-	public void setRestaurantId(String restaurantName) {
-		this.restaurantName = restaurantName;
+	public void setLat(Double lat) {
+		this.lat = lat;
 	}
+
+	public Double getLon() {
+		return lon;
+	}
+
+	public void setLon(Double lon) {
+		this.lon = lon;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 }

@@ -24,8 +24,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,9 +53,11 @@ fun LocationSearchScreen(
     val token = TokenManager.getToken(context)
     val isListVisible = remember { mutableStateOf(true) }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
 
         OutlinedTextField(
             value = searchQuery.value,
@@ -75,7 +79,7 @@ fun LocationSearchScreen(
 
         // Lista de sugerencias de autocompletado
         LazyColumn {
-            if(isListVisible.value) {
+            if (isListVisible.value) {
                 items(viewModel.suggestions) { suggestion ->
                     Card(
                         modifier = Modifier
@@ -157,22 +161,37 @@ fun LocationSearchScreen(
                                 style = MaterialTheme.typography.bodyMedium
                             )
 
+                            // Valoracion del restaurante
+                            Text(
+                                text = place["rating"] ?: "Sin valoracion",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+
                             Spacer(modifier = Modifier.height(8.dp))
+
+                            var isSelected by remember { mutableStateOf(false) }
 
                             IconButton(
                                 onClick = {
-                                    val name= place["name"]
+                                    isSelected = !isSelected
+                                    val latitude = place["latitude"]
+                                    val longitude = place["longitude"]
                                     val username = authViewModel.loadUsername(context)
-                                    val request = RestaurantRequest(username.toString(), name.toString())
+                                    val request = RestaurantRequest(
+                                        username,
+                                        latitude.toString().toDouble(),
+                                        longitude.toString().toDouble()
+                                    )
                                     viewModel.likeRestaurant(token.toString(), request)
 
+
                                 },
-                                modifier =  Modifier.align(Alignment.End)
+                                modifier = Modifier.align(Alignment.End)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Favorite,
                                     contentDescription = "Like",
-                                    tint = Color.Red
+                                    tint = if (isSelected) Color.Red else Color.Gray
                                 )
                             }
                         }
@@ -195,9 +214,11 @@ fun buildPhotoUrl(photoRef: String): String {
 }
 
 @Composable
-fun DisplayPhoto(photoUrl: String,
-                 contentDescription: String,
-                 modifier: Modifier = Modifier) {
+fun DisplayPhoto(
+    photoUrl: String,
+    contentDescription: String,
+    modifier: Modifier = Modifier
+) {
     val painter = rememberAsyncImagePainter(
         model = photoUrl,
         placeholder = painterResource(com.google.android.libraries.places.R.drawable.quantum_ic_clear_grey600_24), // Optional placeholder
