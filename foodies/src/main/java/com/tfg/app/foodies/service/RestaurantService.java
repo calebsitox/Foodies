@@ -74,5 +74,22 @@ public class RestaurantService {
 		}
 		return null;
 	}
+	
+	@Transactional
+	public List<Restaurant> locateResaturantByCoordinatesAndTypes(String type, GeocodeRequest request, String token) {
+
+		if (Objects.isNull(request) || Objects.isNull(request)) {
+			throw new IllegalArgumentException("GeocodeRequest inválido: faltan coordenadas.");
+		}
+
+		List<Restaurant> restaurants = restaurantRepository.findNearbyRestaurantsAndType(type ,request.getLatitude(),
+				request.getLongitude());
+
+		if (restaurants.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return restaurants;
+
+	}
 
 }

@@ -3,21 +3,38 @@ package com.aula.androidfoodies.ui.theme
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +42,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,6 +52,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.times
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
@@ -52,6 +72,15 @@ fun LocationSearchScreen(
     val context = LocalContext.current
     val token = TokenManager.getToken(context)
     val isListVisible = remember { mutableStateOf(true) }
+
+    var expanded by remember { mutableStateOf(false) }
+    val opciones = listOf("🍕 Pizza", "🍔 Hamburguesa", "🌮 Tacos", "🍣 Sushi", "🥗 Ensalada", "🍜 Ramen", "🥞 Pancakes")
+    val seleccionadas = remember { mutableStateMapOf<String, Boolean>().apply {
+        opciones.forEach { put(it, false) }
+    }}
+
+
+
 
     Column(
         modifier = Modifier
@@ -108,6 +137,64 @@ fun LocationSearchScreen(
                 }
             }
         }
+
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Botón con icono para mostrar/ocultar filtros
+            IconButton(
+                onClick = { expanded = !expanded },
+                modifier = Modifier.size(48.dp).border(BorderStroke(2.dp, Color.Black)) , // Tamaño del icono
+
+            ) {
+                Icon(
+                    imageVector = if (expanded) Icons.Filled.Close else Icons.Filled.List,
+                    contentDescription = "Filtros",
+                    tint = Color.Black
+                )
+            }
+
+            if (expanded) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    var rowWidth = 0.dp
+                    val maxRowWidth = 300.dp // Ancho máximo antes de pasar a otra fila
+                    var currentRowItems = mutableListOf<String>()
+
+                    opciones.forEach { opcion ->
+                        val opcionWidth = opcion.length * 10.dp // Aproximación dinámica del ancho
+
+                        if (rowWidth + opcionWidth > maxRowWidth) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                currentRowItems.forEach { item ->
+                                    BotonFiltro(item, seleccionadas)
+                                }
+                            }
+                            currentRowItems.clear()
+                            rowWidth = 0.dp
+                        }
+
+                        currentRowItems.add(opcion)
+                        rowWidth += opcionWidth
+                    }
+
+                    if (currentRowItems.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            currentRowItems.forEach { item ->
+                                BotonFiltro(item, seleccionadas)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -233,3 +320,18 @@ fun DisplayPhoto(
             .height(150.dp)
     )
 }
+
+    @Composable
+    fun BotonFiltro(texto: String, seleccionadas: MutableMap<String, Boolean>) {
+        val seleccionado = seleccionadas[texto] ?: false
+        Button(
+            onClick = { seleccionadas[texto] = !seleccionado },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (seleccionado) Color.Gray else Color.White
+            ),
+            modifier = Modifier.wrapContentWidth().height(35.dp).border(BorderStroke(2.dp, Color.Black))
+        ) {
+            Text(texto, color = Color.White, fontSize = 12.sp)
+        }
+    }
+

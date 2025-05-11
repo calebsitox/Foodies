@@ -43,6 +43,13 @@ public class RestaurantController {
 			@RequestHeader("Authorization") String token) {
 		return restaurantService.locateResaturantByCoordinates(restaurantRequest, token);
 	}
+	
+	@PostMapping("/nearby/type")
+	public List<Restaurant> getNearbyRestaurants(@RequestHeader String type, @RequestBody GeocodeRequest restaurantRequest ,
+			@RequestHeader("Authorization") String token) {
+		return restaurantService.locateResaturantByCoordinatesAndTypes(type, restaurantRequest, token);
+	}
+
 
 	
 }
