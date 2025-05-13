@@ -94,7 +94,7 @@ class AutocompleteViewModel : ViewModel() {
             try {
 
                 val geocodeRequest = GeocodeRequest(latitude, longitude)
-                val response = RetrofitInstance.api.fetchNearbyRestaurants(geocodeRequest, token )
+                val response = RetrofitInstance.api.fetchNearbyRestaurants(geocodeRequest, token)
                 if (response.isSuccessful) {
                     _restaurants.value = response.body() ?: emptyList()
                 } else {
@@ -173,7 +173,8 @@ class AutocompleteViewModel : ViewModel() {
             }
         }
     }
-    fun likeRestaurant(token: String, request: RestaurantRequest){
+
+    fun likeRestaurant(token: String, request: RestaurantRequest) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 RetrofitInstance.api.likeRestaurant(token, request)
@@ -183,6 +184,23 @@ class AutocompleteViewModel : ViewModel() {
         }
     }
 
+    fun likedRestaurant(token: String, username: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = RetrofitInstance.api.likedRestaurants(token, username)
+                if (response.isSuccessful) {
+                    _restaurants.value = (response.body() ?: emptyList()) as List<Map<String, String>>
+                } else {
+                    Log.e(
+                        "Autocomplete",
+                        "Error en la respuesta: ${response.errorBody()?.string()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("LikeRestaurantError", "Error liking restaurant", e)
+            }
+        }
+    }
 
 
 }

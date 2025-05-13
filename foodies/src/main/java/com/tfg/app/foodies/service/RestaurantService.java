@@ -62,10 +62,16 @@ public class RestaurantService {
 	}
 
 	@Transactional
-	public List<Restaurant> filterByLikedrestaurants(LikeRequest likeRequest) {
+	public List<Restaurant> filterByLikedrestaurants(String username) {
 
-		return Collections.emptyList();
+		Optional<User> user = userRepository.findByUsername(username);
+		List<Restaurant> likedRestaurant = restaurantRepository.findLikedRestaurantsByUser(user.get().getId());
+		
+		return likedRestaurant;
+
 	}
+	
+	
 
 	public Long getRestaurantId(String resaturantName) {
 		if (Objects.nonNull(resaturantName)) {

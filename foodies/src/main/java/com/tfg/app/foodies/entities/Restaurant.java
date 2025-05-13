@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.data.annotation.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -60,7 +62,8 @@ public class Restaurant {
 
 	@Column(length = 1000) 
 	private String photoReference;
-
+	
+	@JsonIgnore
 	@ManyToMany(mappedBy = "restaurants")
 	private Collection<User> users;
 	

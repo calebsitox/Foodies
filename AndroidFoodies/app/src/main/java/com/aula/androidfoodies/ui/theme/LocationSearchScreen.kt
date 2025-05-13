@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
@@ -138,18 +139,44 @@ fun LocationSearchScreen(
             }
         }
 
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Botón con icono para mostrar/ocultar filtros
-            IconButton(
-                onClick = { expanded = !expanded },
-                modifier = Modifier.size(48.dp).border(BorderStroke(2.dp, Color.Black)) , // Tamaño del icono
+        var expanded by remember { mutableStateOf(false) }
+        var favorito by remember { mutableStateOf(false) }
 
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(250.dp), // Espaciado entre iconos
+                verticalAlignment = Alignment.CenterVertically // Alinear verticalmente los iconos
             ) {
-                Icon(
-                    imageVector = if (expanded) Icons.Filled.Close else Icons.Filled.List,
-                    contentDescription = "Filtros",
-                    tint = Color.Black
-                )
+                // Botón con icono para mostrar/ocultar filtros
+                IconButton(
+                    onClick = { expanded = !expanded },
+                    modifier = Modifier.size(48.dp) // Tamaño del icono
+
+                ) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Filled.Close else Icons.Filled.List,
+                        contentDescription = "Filtros",
+                        tint = Color.Black
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        favorito = !favorito
+                        val username = authViewModel.loadUsername(context)
+                        if (token != null) {
+                            viewModel.likedRestaurant(token, username)
+                        }
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = "Favorito",
+                        tint = if (favorito) Color.Red else Color.Gray // Cambia color dinámicamente
+                    )
+                }
             }
 
             if (expanded) {
@@ -327,11 +354,14 @@ fun DisplayPhoto(
         Button(
             onClick = { seleccionadas[texto] = !seleccionado },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (seleccionado) Color.Gray else Color.White
+                containerColor = if (seleccionado) Color.LightGray else Color.Transparent
             ),
-            modifier = Modifier.wrapContentWidth().height(35.dp).border(BorderStroke(2.dp, Color.Black))
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .wrapContentWidth()
+                .height(30.dp)
         ) {
-            Text(texto, color = Color.White, fontSize = 12.sp)
+            Text(texto, color = Color.Black, fontSize = 12.sp)
         }
     }
 

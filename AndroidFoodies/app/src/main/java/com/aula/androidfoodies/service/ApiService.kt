@@ -71,4 +71,11 @@ interface ApiService {
         @Body request: RestaurantRequest
     )
 
+    @GET("/api/likedRestaurant")
+    suspend fun likedRestaurants(
+        @Header("Authorization") token: String,
+        @Query("username") username: String
+    ): Response<List<Map<String, String>>>
+
+
 }
