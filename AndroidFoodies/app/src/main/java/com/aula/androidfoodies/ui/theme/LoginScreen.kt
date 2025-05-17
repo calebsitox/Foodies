@@ -3,12 +3,15 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -19,6 +22,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.aula.androidfoodies.ui.theme.fontFoodiess
+import com.aula.androidfoodies.ui.theme.playwriteFontFamily
 import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AuthViewModel
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
@@ -43,10 +48,13 @@ fun LoginScreen(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
         // Title at the top
         Text(
-            text = "FOODIES",
-            fontSize = 32.sp,
+            text = "Foodies",
+            style = TextStyle(
+                fontFamily = fontFoodiess),
+            fontSize = 48.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 16.dp)

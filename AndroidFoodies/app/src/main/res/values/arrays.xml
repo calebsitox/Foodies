@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="certs">
+        <item>
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArD/J5a9HjLkCmZJLdnOj
+            FJZ0yD+K4Zz8Aa+nMPpPqS1oDjRZReSgnQ9/fppF1qk+c6tXddpNjKkTf5IcUKoQ
+            lFegK3FwSOPKjF0CakUzg0wTDzZ9GfHjTc1PqyoQlDYwsyoG2Q5OJbXt+2GpEj7k
+            cLCRDKR8wZ6RiMUi2qYzWwIDAQAB
+        </item>
+    </string-array>
+</resources>

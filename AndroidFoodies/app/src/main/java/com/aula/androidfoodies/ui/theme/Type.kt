@@ -1,34 +1,45 @@
+@file:OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
 package com.aula.androidfoodies.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 
-// Set of Material typography styles to start with
-val Typography = Typography(
+import com.aula.androidfoodies.R
+
+val provider = GoogleFont.Provider(
+    providerAuthority = "com.google.android.gms.fonts",
+    providerPackage = "com.google.android.gms",
+    certificates = emptyList()
+//R.array.com_google_android_gms_fonts_certs // Use an empty list if you don't have certs
+)
+val fontFoodiess = FontFamily(
+    androidx.compose.ui.text.font.Font(R.font.font_foodies, FontWeight.W400),
+
+)
+// Set up Google Font
+val playwriteFontFamily = FontFamily(
+    Font(
+        googleFont = GoogleFont("Lobster"),
+        fontProvider = provider,
+    )
+)
+
+val AppTypography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
+        fontFamily = playwriteFontFamily,
+        fontWeight = FontWeight.W400,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
     ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+    titleLarge = TextStyle(
+        fontFamily = playwriteFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp
     )
-    */
 )

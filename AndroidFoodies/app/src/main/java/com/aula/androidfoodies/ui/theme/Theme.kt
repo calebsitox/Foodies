@@ -1,7 +1,10 @@
+@file:OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
 package com.aula.androidfoodies.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import android.view.View
+import android.view.WindowManager
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -16,26 +19,24 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Orange,
-    secondary = Scarlet,
-    tertiary = OrangeSoft
+    primary = PrimaryDark,
+    secondary = Accent,
+    background = Background,
+    surface = Surface,
+    error = Error,
+    onPrimary = Surface
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Orange,
-    secondary = Scarlet,
-    tertiary = OrangeSoft
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Primary,
+    secondary = PrimaryDark,
+    background = Background,
+    surface = Surface,
+    error = Error,
+    onPrimary = Surface
 )
+
+
 
 @Composable
 fun AndroidFoodiesTheme(
@@ -57,14 +58,15 @@ fun AndroidFoodiesTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            window.decorView.systemUiVisibility =
+                (View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
+        colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
+        typography = AppTypography,
         content = content
+
     )
 }
