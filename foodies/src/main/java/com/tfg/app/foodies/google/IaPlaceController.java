@@ -61,9 +61,9 @@ public class IaPlaceController {
 		JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
 		LOGGER.info("JSON response parsed successfully.");
 		
-		JsonNode result = jsonNode.path("results");
+		JsonNode results = jsonNode.path("results");
 		
-		String placeId = result.path("id").asText();
+		String placeId = results.get(0).path("place_id").asText();
 		
 		 if (placeId == null) {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -74,22 +74,34 @@ public class IaPlaceController {
 
 		HttpHeaders headers = new HttpHeaders();
         headers.set("X-Goog-Api-Key", apiKey);
-        headers.set("X-Goog-FieldMask", "displayName,generativeSummary");
+        headers.set("X-Goog-FieldMask", "displayName,reviewSummary,reviews");
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         
-        ResponseEntity<PlaceResponse> placeResp = restTemplate.exchange(
+        ResponseEntity<JsonNode> placesResponse = restTemplate.exchange(
                 placesUrl,
                 HttpMethod.GET,
                 entity,
-                PlaceResponse.class
-            );
-            PlaceResponse body = placeResp.getBody();
-            if (body == null || body.getGenerativeSummary() == null) {
-                throw new IllegalStateException("El lugar no tiene generativeSummary disponible");
-            }
+                JsonNode.class
+        );
 
-            String summary = body.getGenerativeSummary();
-            return ResponseEntity.ok(summary);
+        JsonNode place = placesResponse.getBody();
+        if (place == null || !place.has("reviews")) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Este lugar no tiene reseñas disponibles.");
+        }
+
+        JsonNode reviews = place.path("reviews");
+
+        // Opcional: formatear reseñas como String
+        StringBuilder sb = new StringBuilder();
+        for (JsonNode review : reviews) {
+            String author = review.path("authorAttribution").path("displayName").asText();
+            double rating = review.path("rating").asDouble();
+            String text = review.path("text").asText();
+            sb.append("").append(rating).append(" - ").append(author).append("\n");
+            sb.append(text).append("\n\n");
+        }
+
+        return ResponseEntity.ok(sb.toString());
 	   
 	}
 }
