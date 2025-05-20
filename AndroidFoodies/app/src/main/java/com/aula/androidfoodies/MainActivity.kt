@@ -10,7 +10,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -104,4 +109,9 @@ class MainActivity : ComponentActivity() {
 
 
 
+}
+sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
+    object Profile : BottomNavItem("profile", Icons.Default.Person, "Perfil")
+    object Favorites : BottomNavItem("likes", Icons.Default.Favorite, "Mis Me Gusta")
+    object Map : BottomNavItem("map", Icons.Default.Favorite, "Mapa Cercano")
 }
