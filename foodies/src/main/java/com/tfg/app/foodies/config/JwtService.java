@@ -21,8 +21,8 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 	
-//	@Autowired
-//	private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
 	
     private static final long EXPIRATION_TIME = 10 * 60 * 60 * 1000; // 10 horas
@@ -51,11 +51,11 @@ public class JwtService {
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 	
-//	public Boolean validateToken1(String token) {
-//	    String username = extractUsername(token);
-//	    UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Aquí obtienes el UserDetails
-//	    return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-//	}
+	public Boolean validateToken1(String token) {
+	    String username = extractUsername(token);
+	    UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Aquí obtienes el UserDetails
+	    return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+	}
 
 
 	private Boolean isTokenExpired(String token) {

@@ -32,19 +32,19 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class IaPlaceController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(IaPlaceController.class);
 
 	@Value("${google.api.key}")
 	private String apiKey;
-	
+
 	@Autowired
 	private JwtService jwtService;
-	
-	
-	@GetMapping("/summaries/place")
-	public ResponseEntity<String>  obtenerUrlFoto(@RequestHeader("Authorization")  String token, @RequestBody GeocodeRequest geocodeRequest) throws JsonMappingException, JsonProcessingException {
-		
+
+	@GetMapping("/reviews/place")
+	public ResponseEntity<String> placeReviews(@RequestHeader("Authorization") String token,
+			@RequestBody GeocodeRequest geocodeRequest) throws JsonMappingException, JsonProcessingException {
+
 //		Boolean validate = jwtService.validateToken1(token);
 //		
 //		if (Boolean.FALSE.equals(validate)) {
@@ -52,56 +52,102 @@ public class IaPlaceController {
 //		}
 		RestTemplate restTemplate = new RestTemplate();
 
+		String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + geocodeRequest.getLatitude() + ","
+				+ geocodeRequest.getLongitude() + "&key=" + apiKey;
 
-		String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +  geocodeRequest.getLatitude() + "," + geocodeRequest.getLongitude() + "&key=" + apiKey;
-		
 		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
 		// Parsear JSON
 		JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
 		LOGGER.info("JSON response parsed successfully.");
-		
+
 		JsonNode results = jsonNode.path("results");
-		
+
 		String placeId = results.get(0).path("place_id").asText();
-		
-		 if (placeId == null) {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                                 .body("Respuesta inesperada de Geocoding API");
-	        }
-		
-		String placesUrl = "https://places.googleapis.com/v1/places/" + placeId ;
+
+		if (placeId == null) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Respuesta inesperada de Geocoding API");
+		}
+
+		String placesUrl = "https://places.googleapis.com/v1/places/" + placeId;
 
 		HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Goog-Api-Key", apiKey);
-        headers.set("X-Goog-FieldMask", "displayName,reviewSummary,reviews");
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        
-        ResponseEntity<JsonNode> placesResponse = restTemplate.exchange(
-                placesUrl,
-                HttpMethod.GET,
-                entity,
-                JsonNode.class
-        );
+		headers.set("X-Goog-Api-Key", apiKey);
+		headers.set("X-Goog-FieldMask", "displayName,reviewSummary,reviews");
+		HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        JsonNode place = placesResponse.getBody();
-        if (place == null || !place.has("reviews")) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Este lugar no tiene reseñas disponibles.");
-        }
+		ResponseEntity<JsonNode> placesResponse = restTemplate.exchange(placesUrl, HttpMethod.GET, entity,
+				JsonNode.class);
 
-        JsonNode reviews = place.path("reviews");
+		JsonNode place = placesResponse.getBody();
+		if (place == null || !place.has("reviews")) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Este lugar no tiene reseñas disponibles.");
+		}
 
-        // Opcional: formatear reseñas como String
-        StringBuilder sb = new StringBuilder();
-        for (JsonNode review : reviews) {
-            String author = review.path("authorAttribution").path("displayName").asText();
-            double rating = review.path("rating").asDouble();
-            String text = review.path("text").asText();
-            sb.append("").append(rating).append(" - ").append(author).append("\n");
-            sb.append(text).append("\n\n");
-        }
+		JsonNode reviews = place.path("reviews");
 
-        return ResponseEntity.ok(sb.toString());
-	   
+		// Opcional: formatear reseñas como String
+		StringBuilder sb = new StringBuilder();
+		for (JsonNode review : reviews) {
+			String author = review.path("authorAttribution").path("displayName").asText();
+			double rating = review.path("rating").asDouble();
+			String text = review.path("text").asText();
+			sb.append("").append(rating).append(" - ").append(author).append("\n");
+			sb.append(text).append("\n\n");
+		}
+
+		return ResponseEntity.ok(sb.toString());
+
+	}
+
+	@GetMapping("/summaries/place")
+	public ResponseEntity<String> placeSummarie(@RequestHeader("Authorization") String token,
+			@RequestBody GeocodeRequest geocodeRequest) throws JsonMappingException, JsonProcessingException {
+
+//		Boolean validate = jwtService.validateToken1(token);
+//		
+//		if (Boolean.FALSE.equals(validate)) {
+//			return null;
+//		}
+		RestTemplate restTemplate = new RestTemplate();
+
+		String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + geocodeRequest.getLatitude() + ","
+				+ geocodeRequest.getLongitude() + "&key=" + apiKey;
+
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+		// Parsear JSON
+		JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
+		LOGGER.info("JSON response parsed successfully.");
+
+		JsonNode results = jsonNode.path("results");
+
+		String placeId = results.get(0).path("place_id").asText();
+
+		if (placeId == null) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Respuesta inesperada de Geocoding API");
+		}
+
+		String placesUrl = "https://places.googleapis.com/v1/places/" + placeId;
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-Goog-Api-Key", apiKey);
+		headers.set("X-Goog-FieldMask", "id,displayName,neighborhoodSummary");
+
+		HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+		ResponseEntity<JsonNode> placesResponse = restTemplate.exchange(placesUrl, HttpMethod.GET, entity,
+				JsonNode.class);
+
+		JsonNode placeBody = placesResponse.getBody();
+		if (placeBody == null || !placeBody.has("generativeSummary")) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+					.body("Este lugar no tiene resumen generado (generativeSummary).");
+		}
+
+		String summary = placeBody.path("generativeSummary").path("text").asText();
+		return ResponseEntity.ok(summary);
 	}
 }

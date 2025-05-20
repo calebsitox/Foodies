@@ -56,11 +56,11 @@ public class RestaurantController {
 	public ResponseEntity<List<Map<?, ?>>> getlikedRestaurantbyUser(@RequestParam String username,
 			@RequestHeader("Authorization") String token) {
 
-//		Boolean validate = jwtService.validateToken1(token);
-//
-//		if (Boolean.FALSE.equals(validate)) {
-//			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null); // ✅ Mejor que devolver null
-//		}
+		Boolean validate = jwtService.validateToken1(token);
+
+		if (Boolean.FALSE.equals(validate)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null); // ✅ Mejor que devolver null
+		}
 
 		List<Restaurant> likedRestaurants = restaurantService.filterByLikedrestaurants(username);
 		List<Map<?, ?>> placesList = new ArrayList<>();
