@@ -3,6 +3,7 @@ package com.aula.androidfoodies.ui.theme
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -52,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,6 +64,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.aula.androidfoodies.BottomNavItem
+import com.aula.androidfoodies.R
 import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AuthViewModel
@@ -76,7 +81,7 @@ fun LocationSearchScreen(
         BottomNavItem.Favorites,
         BottomNavItem.Map
     )
-    val selectedIndex = remember { mutableStateOf(0) }
+    val selectedIndex = remember { mutableStateOf(1) }
     val searchQuery = remember { mutableStateOf("") }
     val restaurants = viewModel.restaurants.value
     val context = LocalContext.current
@@ -101,16 +106,39 @@ fun LocationSearchScreen(
 
     Scaffold(
         bottomBar = {
-            NavigationBar  {
+            NavigationBar {
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
                         icon = { Icon(item.icon, contentDescription = item.label) },
-                        label = { Text(item.label) },
+                        label = {
+                            Text(
+                                item.label,
+                                style = TextStyle(
+                                    fontFamily = fontFoodiess, // Puedes usar FontFamily.Default, Monospace, etc.
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp
+                                )
+                            )
+                        },
                         selected = selectedIndex.value == index,
                         onClick = {
                             selectedIndex.value = index
-                            // Agrega aquí la lógica de navegación si es necesario
-                        }
+                            navController.navigate(item.route) {
+                                launchSingleTop = true
+                                restoreState = true
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                            }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            indicatorColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+
                     )
                 }
             }
@@ -140,7 +168,7 @@ fun LocationSearchScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(9.dp))
 
 
             // Lista de sugerencias de autocompletado
@@ -264,7 +292,7 @@ fun LocationSearchScreen(
             }
 
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(9.dp))
 
             if (restaurants.isEmpty()) {
                 Text(
@@ -280,6 +308,9 @@ fun LocationSearchScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFFFC107) // Gris claro suave
+                            ),
                             elevation = CardDefaults.cardElevation(4.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
@@ -379,7 +410,7 @@ fun DisplayPhoto(
     val painter = rememberAsyncImagePainter(
         model = photoUrl,
         placeholder = painterResource(com.google.android.libraries.places.R.drawable.quantum_ic_clear_grey600_24), // Optional placeholder
-        error = painterResource(com.google.android.libraries.places.R.drawable.quantum_ic_clear_grey600_24) // Fallback on error
+        error = painterResource(R.drawable.cancel) // Fallback on error
     )
 
     Image(
@@ -407,6 +438,8 @@ fun BotonFiltro(texto: String, seleccionadas: MutableMap<String, Boolean>) {
         Text(texto, color = Color.Black, fontSize = 12.sp)
     }
 }
+
+
 
 
 
