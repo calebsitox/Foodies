@@ -34,8 +34,8 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     private Collection<User> users;
-    
-    public String getName() {
+
+	public String getName() {
     	return name;
     }
 }

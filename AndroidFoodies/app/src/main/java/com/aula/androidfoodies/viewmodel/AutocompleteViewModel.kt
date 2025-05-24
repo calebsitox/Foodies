@@ -61,6 +61,8 @@ class AutocompleteViewModel : ViewModel() {
     private val _restaurants = mutableStateOf<List<Map<String, String>>>(emptyList())
     val restaurants: State<List<Map<String, String>>> = _restaurants
 
+
+
     fun fetchAutocompleteSuggestions(input: String) {
         if (input.isBlank()) {
             suggestions.clear()
@@ -196,6 +198,16 @@ class AutocompleteViewModel : ViewModel() {
                         "Error en la respuesta: ${response.errorBody()?.string()}"
                     )
                 }
+            } catch (e: Exception) {
+                Log.e("LikeRestaurantError", "Error liking restaurant", e)
+            }
+        }
+    }
+
+    fun unlikeRestaurant(token: String, request: RestaurantRequest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                RetrofitInstance.api.unlikeRestaurant(token, request)
             } catch (e: Exception) {
                 Log.e("LikeRestaurantError", "Error liking restaurant", e)
             }

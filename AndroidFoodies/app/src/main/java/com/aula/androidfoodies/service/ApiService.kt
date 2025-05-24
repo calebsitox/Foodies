@@ -71,6 +71,12 @@ interface ApiService {
         @Body request: RestaurantRequest
     )
 
+    @POST("api/unlikeRestuarant")
+    suspend fun unlikeRestaurant(
+        @Header("Authorization") token: String,
+        @Body request: RestaurantRequest
+    )
+
     @GET("/api/likedRestaurant")
     suspend fun likedRestaurants(
         @Header("Authorization") token: String,

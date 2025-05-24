@@ -42,6 +42,8 @@ public class User {
 
     @Column(nullable = true )
     private boolean enabled = true;
+    
+    private String sessionId;  
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -112,6 +114,15 @@ public class User {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+    
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
 }

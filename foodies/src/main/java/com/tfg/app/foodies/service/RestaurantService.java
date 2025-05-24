@@ -43,6 +43,25 @@ public class RestaurantService {
 		}
 
 	}
+	
+	@Transactional
+	public void unlikeRestaurantUser(LikeRequest likeRequest) {
+
+		Optional<User> user = userRepository.findByUsername(likeRequest.getUserName());
+
+		List<Restaurant> resturantList= restaurantRepository.findRestaurantsByCoordenates(likeRequest.getLat(), likeRequest.getLon());
+
+		Restaurant restaurant = resturantList.get(0);
+
+		if (user.isPresent()) {
+	        user.get().getRestaurants().remove(restaurant);
+
+	        restaurant.getUsers().remove(user.get());
+	        userRepository.save(user.get());
+	        restaurantRepository.save(restaurant);
+		}
+
+	}
 
 	@Transactional
 	public List<Restaurant> locateResaturantByCoordinates(GeocodeRequest request, String token) {

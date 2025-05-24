@@ -1,5 +1,8 @@
 package com.tfg.app.foodies.controller;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,9 +10,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,12 +22,20 @@ import com.tfg.app.foodies.config.JwtService;
 import com.tfg.app.foodies.dtos.AuthResponse;
 import com.tfg.app.foodies.dtos.LoginRequest;
 import com.tfg.app.foodies.dtos.RegisterRequest;
+import com.tfg.app.foodies.entities.Role;
 import com.tfg.app.foodies.entities.User;
+import com.tfg.app.foodies.repository.RoleRepository;
 import com.tfg.app.foodies.repository.UserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+	
+	@Autowired
+	private RoleRepository roleRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -41,7 +52,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
 		System.out.println("Attempting login for: " + loginRequest.getUsername());
 		try {
 			// Autenticar al usuario con sus credenciales
@@ -51,7 +62,16 @@ public class AuthController {
 			// Cargar detalles del usuario y generar el token JWT
 			UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
 			String token = jwtService.generateToken(userDetails);
-
+			
+	        HttpSession session = request.getSession();
+	        String sessionId = session.getId();
+	        
+	        User user = userRepository.findByUsername(loginRequest.getUsername())
+	                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+	        
+	        user.setSessionId(sessionId);  // Asume que tienes un campo sessionId en tu entidad User
+	        userRepository.save(user);
+			
 			return ResponseEntity.ok(new AuthResponse(token));
 		} catch (AuthenticationException e) {
 			// Responder con FORBIDDEN si la autenticación falla (contraseña incorrecta)
@@ -61,8 +81,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-
+	public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, HttpServletRequest request) {
+		 Role role = this.roleRepository.findByIdRole();
+		 
 		// Verificar si el usuario ya existe
 		if (userDetailsService.userExists(registerRequest.getUsername())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -75,7 +96,12 @@ public class AuthController {
 		newUser.setUsername(registerRequest.getUsername());
 		newUser.setPassword(encodedPassword);
 		newUser.setEmail(registerRequest.getEmail()); // Establece el email del usuario
+		newUser.setRoles(Collections.singletonList(role));
+        HttpSession session = request.getSession();
+        String sessionId = session.getId();
+        
 
+        newUser.setSessionId(sessionId); 
 		// Guardar el usuario en la base de datos
 		userRepository.save(newUser);
 

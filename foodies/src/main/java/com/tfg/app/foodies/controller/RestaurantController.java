@@ -31,6 +31,14 @@ public class RestaurantController {
 
 	@Autowired
 	private RestaurantService restaurantService;
+	
+	@PostMapping("unlikeRestuarant")
+	public ResponseEntity<?> unlikeRestaurant(@RequestBody LikeRequest likeRequest,
+			@RequestHeader("Authorization") String token) {
+
+		restaurantService.unlikeRestaurantUser(likeRequest);
+		return new ResponseEntity<>("Like done Good", HttpStatus.ACCEPTED);
+	}
 
 	@PostMapping("likeRestuarant")
 	public ResponseEntity<?> likeRestaurant(@RequestBody LikeRequest likeRequest,
