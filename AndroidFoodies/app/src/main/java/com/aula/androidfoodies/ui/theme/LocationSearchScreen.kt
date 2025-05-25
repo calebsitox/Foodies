@@ -60,6 +60,7 @@ import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AuthViewModel
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
+import com.google.gson.Gson
 
 @Composable
 fun LocationSearchScreen(
@@ -305,16 +306,11 @@ fun LocationSearchScreen(
                                 .fillMaxWidth()
                                 .padding(8.dp)
                                 .clickable{
-                                    val name = place["name"] ?: "Sin nombre"
-                                    val address = place["address"] ?: "Sin dirección"
-                                    val rating = place["rating"] ?: "Sin valoración"
+                                    val gson = Gson()
+                                    val placeJson = gson.toJson(place)
+                                    val encodedPlace = Uri.encode(placeJson)
 
-                                    // Codificar los valores para evitar errores con espacios o caracteres especiales
-                                    val encodedName = Uri.encode(name)
-                                    val encodedAddress = Uri.encode(address)
-                                    val encodedRating = Uri.encode(rating)
-
-                                    navController.navigate("restaurantDetail/$encodedName/$encodedAddress/$encodedRating")
+                                    navController.navigate("restaurantDetail/$encodedPlace")
                                 },
                             colors = CardDefaults.cardColors(
                                 containerColor = Color(0xFFFFC107) // Gris claro suave

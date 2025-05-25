@@ -13,10 +13,17 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun RestaurantDetailScreen(name: String, address: String, rating: String) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+fun RestaurantDetailScreen(
+    place: Map<String, String>) {
+    val name = place["name"] ?: "Sin nombre"
+    val address = place["address"] ?: "Sin dirección"
+    val rating = place["rating"] ?: "Sin valoración"
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         Text(text = name, style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = address, style = MaterialTheme.typography.bodyLarge)

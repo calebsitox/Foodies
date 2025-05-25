@@ -43,6 +43,8 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -79,19 +81,13 @@ class MainActivity : ComponentActivity() {
             composable("sendEmail") { SendEmailScreen(navController) }
             composable("location") { LocationSearchScreen( locationViewModel, authViewModel, navController) }
             composable("map") { MapScreen(navController, locationViewModel)}
-            composable(
-                "restaurantDetail/{name}/{address}/{rating}",
-                arguments = listOf(
-                    navArgument("name") { type = NavType.StringType },
-                    navArgument("address") { type = NavType.StringType },
-                    navArgument("rating") { type = NavType.StringType }
-                )
+            composable("restaurantDetail/{placeJson}",
+                arguments = listOf(navArgument("placeJson") { type = NavType.StringType })
             ) { backStackEntry ->
-                val name = backStackEntry.arguments?.getString("name") ?: "Sin nombre"
-                val address = backStackEntry.arguments?.getString("address") ?: "Sin dirección"
-                val rating = backStackEntry.arguments?.getString("rating") ?: "Sin valoración"
+                val json = backStackEntry.arguments?.getString("placeJson")
+                val place: Map<String, String> = Gson().fromJson(json, object : TypeToken<Map<String, String>>() {}.type)
 
-                RestaurantDetailScreen(name, address, rating)
+                RestaurantDetailScreen(place)
             }
         }
     }
