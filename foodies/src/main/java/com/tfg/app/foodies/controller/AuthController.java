@@ -26,6 +26,7 @@ import com.tfg.app.foodies.entities.Role;
 import com.tfg.app.foodies.entities.User;
 import com.tfg.app.foodies.repository.RoleRepository;
 import com.tfg.app.foodies.repository.UserRepository;
+import com.tfg.app.foodies.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +34,9 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+	
+	@Autowired
+	private UserService userService;
 	
 	@Autowired
 	private RoleRepository roleRepository;
@@ -106,6 +110,19 @@ public class AuthController {
 		userRepository.save(newUser);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+	}
+	
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(HttpServletRequest request) {
+	    String authHeader = request.getHeader("Authorization");
+	    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+	        String jwt = authHeader.substring(7);
+	        String sessionId = jwtService.extractSessionId(jwt);
+
+//	        userService.closeSession(sessionId);
+	        return ResponseEntity.ok("Sesión cerrada");
+	    }
+	    return ResponseEntity.badRequest().body("Token inválido");
 	}
 
 

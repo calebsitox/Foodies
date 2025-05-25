@@ -24,13 +24,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.aula.androidfoodies.ui.theme.AndroidFoodiesTheme
 import com.aula.androidfoodies.ui.theme.LocationSearchScreen
 import com.aula.androidfoodies.ui.theme.MapScreen
 import com.aula.androidfoodies.ui.theme.RegisterScreen
+import com.aula.androidfoodies.ui.theme.RestaurantDetailScreen
 import com.aula.androidfoodies.ui.theme.SendEmailScreen
 import com.aula.androidfoodies.viewmodel.AuthViewModel
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
@@ -76,6 +79,20 @@ class MainActivity : ComponentActivity() {
             composable("sendEmail") { SendEmailScreen(navController) }
             composable("location") { LocationSearchScreen( locationViewModel, authViewModel, navController) }
             composable("map") { MapScreen(navController, locationViewModel)}
+            composable(
+                "restaurantDetail/{name}/{address}/{rating}",
+                arguments = listOf(
+                    navArgument("name") { type = NavType.StringType },
+                    navArgument("address") { type = NavType.StringType },
+                    navArgument("rating") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val name = backStackEntry.arguments?.getString("name") ?: "Sin nombre"
+                val address = backStackEntry.arguments?.getString("address") ?: "Sin dirección"
+                val rating = backStackEntry.arguments?.getString("rating") ?: "Sin valoración"
+
+                RestaurantDetailScreen(name, address, rating)
+            }
         }
     }
 

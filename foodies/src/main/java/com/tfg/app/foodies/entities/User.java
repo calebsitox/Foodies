@@ -43,6 +43,7 @@ public class User {
     @Column(nullable = true )
     private boolean enabled = true;
     
+    @Column(name = "session_id")
     private String sessionId;  
 
     @ManyToMany(fetch = FetchType.EAGER)

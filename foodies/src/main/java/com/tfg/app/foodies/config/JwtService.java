@@ -81,5 +81,9 @@ public class JwtService {
             .signWith(secretKey, SignatureAlgorithm.HS256) // Firma usando la clave secreta
             .compact();
     }
+    
+    public String extractSessionId(String token) {
+        return extractAllClaims(token).get("sessionId", String.class);
+    }
 	
 }

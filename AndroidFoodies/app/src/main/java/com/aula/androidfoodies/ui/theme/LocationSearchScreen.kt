@@ -303,7 +303,19 @@ fun LocationSearchScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp),
+                                .padding(8.dp)
+                                .clickable{
+                                    val name = place["name"] ?: "Sin nombre"
+                                    val address = place["address"] ?: "Sin dirección"
+                                    val rating = place["rating"] ?: "Sin valoración"
+
+                                    // Codificar los valores para evitar errores con espacios o caracteres especiales
+                                    val encodedName = Uri.encode(name)
+                                    val encodedAddress = Uri.encode(address)
+                                    val encodedRating = Uri.encode(rating)
+
+                                    navController.navigate("restaurantDetail/$encodedName/$encodedAddress/$encodedRating")
+                                },
                             colors = CardDefaults.cardColors(
                                 containerColor = Color(0xFFFFC107) // Gris claro suave
                             ),
