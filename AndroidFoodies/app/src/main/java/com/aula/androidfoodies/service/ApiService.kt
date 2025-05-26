@@ -6,9 +6,11 @@ import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.GeocodeResponse
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.model.LoginRequest
+import com.aula.androidfoodies.model.PlaceDetailResponse
 import com.aula.androidfoodies.model.RegisterRequest
 import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.model.Security
+import com.google.common.base.Objects
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -82,6 +84,19 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("username") username: String
     ): Response<List<Map<String, String>>>
+
+    @GET("api/summaries/place")
+    suspend fun resturantReviews(
+        @Header("Authorization") token: String,
+        request: GeocodeRequest
+    ): Response<Map<String, String>>
+
+    @GET("api/place/detail")
+    suspend fun resturantDetails(
+        @Header("Authorization") token: String,
+        @Body request: GeocodeRequest
+    ): Response<PlaceDetailResponse>
+
 
 
 }

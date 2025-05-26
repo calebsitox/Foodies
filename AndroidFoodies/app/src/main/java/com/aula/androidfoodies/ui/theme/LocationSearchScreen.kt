@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -159,7 +160,10 @@ fun LocationSearchScreen(
                 },
                 label = { Text("Buscar dirección") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                modifier = Modifier.fillMaxWidth()
+
+                modifier = Modifier.fillMaxWidth().onFocusChanged { focusState ->
+                    isListVisible.value = focusState.isFocused
+                }
             )
 
             Spacer(modifier = Modifier.height(9.dp))
@@ -172,6 +176,7 @@ fun LocationSearchScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
+
                                 .padding(vertical = 4.dp)
                                 .clickable {
                                     // Actualiza el campo de búsqueda y obtiene coordenadas
@@ -190,6 +195,9 @@ fun LocationSearchScreen(
 
                                     }
                                 },
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFFFB74D),
+                                contentColor = Color.Black),
                             elevation = CardDefaults.cardElevation(4.dp)
                         ) {
                             Text(
@@ -415,11 +423,15 @@ fun DisplayPhoto(
     contentDescription: String,
     modifier: Modifier = Modifier
 ) {
-    val painter = rememberAsyncImagePainter(
-        model = photoUrl,
-        placeholder = painterResource(com.google.android.libraries.places.R.drawable.quantum_ic_clear_grey600_24), // Optional placeholder
-        error = painterResource(R.drawable.cancel) // Fallback on error
-    )
+    val painter = if (!photoUrl.isNullOrEmpty()) {
+        rememberAsyncImagePainter(
+            model = photoUrl,
+            placeholder = painterResource(R.drawable.cancel), // puedes usar un recurso tuyo o quitarlo
+            error = painterResource(R.drawable.cancel) // si falla la carga
+        )
+    } else {
+        painterResource(R.drawable.cancel) // si la URL está vacía o nula
+    }
 
     Image(
         painter = painter,

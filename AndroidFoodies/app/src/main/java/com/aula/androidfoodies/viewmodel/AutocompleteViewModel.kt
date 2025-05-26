@@ -3,43 +3,31 @@ package com.aula.androidfoodies.viewmodel
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Looper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.ActivityCompat
 import com.aula.androidfoodies.model.AddressRequest
 import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.GeocodeResponse
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
+import com.aula.androidfoodies.model.PlaceDetailResponse
 import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.retrofit.RetrofitInstance
 import com.aula.androidfoodies.retrofit.RetrofitInstance.api
-import com.aula.androidfoodies.service.ApiService
-import com.aula.androidfoodies.utils.TokenManager
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.UUID
 
 class AutocompleteViewModel : ViewModel() {
 
@@ -61,6 +49,8 @@ class AutocompleteViewModel : ViewModel() {
     private val _restaurants = mutableStateOf<List<Map<String, String>>>(emptyList())
     val restaurants: State<List<Map<String, String>>> = _restaurants
 
+    private val _likedRestaurants = mutableStateOf<List<Map<String, String>>>(emptyList())
+    val likedRestaurants: State<List<Map<String, String>>> = _likedRestaurants
 
 
     fun fetchAutocompleteSuggestions(input: String) {
@@ -191,7 +181,9 @@ class AutocompleteViewModel : ViewModel() {
             try {
                 val response = RetrofitInstance.api.likedRestaurants(token, username)
                 if (response.isSuccessful) {
-                    _restaurants.value = (response.body() ?: emptyList()) as List<Map<String, String>>
+                    _restaurants.value =
+                        (response.body() ?: emptyList()) as List<Map<String, String>>
+                    _likedRestaurants.value = response.body() ?: emptyList()
                 } else {
                     Log.e(
                         "Autocomplete",
@@ -215,5 +207,37 @@ class AutocompleteViewModel : ViewModel() {
     }
 
 
+
+    suspend fun fetchPlaceDetails(token: String, request: GeocodeRequest): PlaceDetailResponse? {
+        return try {
+            val response = RetrofitInstance.api.resturantDetails(token, request)
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                Log.e("PlaceDetails", "Error en la respuesta: ${response.code()}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("PlaceDetails", "Error: ${e.message}", e)
+            null
+        }
+    }
+
+    // Forma CORRECTA de construir la URL con parámetros
+    fun buildPhotoUrl(photoRef: String): String {
+        return Uri.parse("https://maps.googleapis.com/maps/api/place/photo")
+            .buildUpon()
+            .appendQueryParameter("maxwidth", "400")
+            .appendQueryParameter("photoreference", photoRef) // No necesitas URLEncoder aquí
+            .appendQueryParameter(
+                "key",
+                "AIzaSyCNSEbqAUraUirf4YqRBbdxflyysTWWx6c"
+            ) // Tu API key
+            .build()
+            .toString()
+    }
+
+
 }
+
 

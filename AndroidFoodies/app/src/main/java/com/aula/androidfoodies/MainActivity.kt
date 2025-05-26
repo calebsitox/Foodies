@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                 val json = backStackEntry.arguments?.getString("placeJson")
                 val place: Map<String, String> = Gson().fromJson(json, object : TypeToken<Map<String, String>>() {}.type)
 
-                RestaurantDetailScreen(place)
+                RestaurantDetailScreen(place, locationViewModel, authViewModel)
             }
         }
     }
