@@ -6,8 +6,11 @@ import com.aula.androidfoodies.model.GeocodeRequest
 import com.aula.androidfoodies.model.GeocodeResponse
 import com.aula.androidfoodies.model.GeocodeResponseToCordenates
 import com.aula.androidfoodies.model.LoginRequest
+import com.aula.androidfoodies.model.PlaceDetailResponse
 import com.aula.androidfoodies.model.RegisterRequest
+import com.aula.androidfoodies.model.RestaurantRequest
 import com.aula.androidfoodies.model.Security
+import com.google.common.base.Objects
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -38,6 +41,11 @@ interface ApiService {
         @Body newPassword: String
     ): Call<String>
 
+    @POST("api/photo")
+    suspend fun getUrlPhoto(
+        @Body photoReference: String,
+        @Header("Authorization") token: String
+    ): String
 
     @POST("api/location/geocode")
     fun sendCoordinates(
@@ -45,11 +53,10 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Call<GeocodeResponse>
 
-
-    @GET("/api/places/name/directions")
+    @POST("/api/places/name/directions")
     suspend fun fetchNearbyRestaurants(
-        @Query("latitude") latitude: Double,
-        @Query("longitude") longitude: Double
+        @Body request: GeocodeRequest,
+        @Header("Authorization") token: String
     ): Response<List<Map<String, String>>>
 
     @GET("/api/autocomplete")
@@ -59,5 +66,37 @@ interface ApiService {
 
     @GET("api/geocode/addressToCoordinates")
     fun getCoordinates(@Query("address") request: AddressRequest): Call<GeocodeResponseToCordenates>
+
+    @POST("api/likeRestuarant")
+    suspend fun likeRestaurant(
+        @Header("Authorization") token: String,
+        @Body request: RestaurantRequest
+    )
+
+    @POST("api/unlikeRestuarant")
+    suspend fun unlikeRestaurant(
+        @Header("Authorization") token: String,
+        @Body request: RestaurantRequest
+    )
+
+    @GET("/api/likedRestaurant")
+    suspend fun likedRestaurants(
+        @Header("Authorization") token: String,
+        @Query("username") username: String
+    ): Response<List<Map<String, String>>>
+
+    @GET("api/summaries/place")
+    suspend fun resturantReviews(
+        @Header("Authorization") token: String,
+        request: GeocodeRequest
+    ): Response<Map<String, String>>
+
+    @POST("api/place/detail")
+    suspend fun resturantDetails(
+        @Header("Authorization") token: String,
+        @Body request: GeocodeRequest
+    ): Response<PlaceDetailResponse>
+
+
 
 }

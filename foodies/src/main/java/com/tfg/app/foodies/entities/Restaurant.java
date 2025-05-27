@@ -1,13 +1,21 @@
 package com.tfg.app.foodies.entities;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
@@ -27,31 +35,48 @@ import lombok.Setter;
 		@UniqueConstraint(columnNames = { "latitude", "longitude", "address" }, name = "unique_location") })
 public class Restaurant {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "restaurant_seq")
+    @SequenceGenerator(name = "restaurant_seq", sequenceName = "my_sequence", allocationSize = 1)
 	private Long id;
 	
 	@NotNull
 	private String name;
 
-
 	@NotNull
 	private String address;
 
 	@NotNull
-	private double latitude;
+	private Double latitude;
 
 	@NotNull
-	private double longitude;
+	private Double longitude;
 
-	private double rating;
+	private Double rating;
 
-	private List<String> types;
+	@Column(name = "types")
+	private String typesString; // Almacena el formato crudo {a,b,c}
+	
+	@Transient
+	private List<String> typesList;
 
-	private String phothoReference;
-
+	@Column(length = 1000) 
+	private String photoReference;
+	
+	@JsonIgnore
 	@ManyToMany(mappedBy = "restaurants")
 	private Collection<User> users;
+	
+	
+	@PostLoad
+	private void convertStringToArray() {
+	    if (this.typesString != null) {
+	        // Elimina llaves y divide por comas
+	        this.typesList = Arrays.asList(
+	            this.typesString.replaceAll("[{}]", "").split(",")
+	        );
+	    }
+	}
 
 	public Long getId() {
 		return id;
@@ -78,44 +103,52 @@ public class Restaurant {
 		this.address = address;
 	}
 
-	public double getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(double latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public double getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(double longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
-	public double getRating() {
+	public Double getRating() {
 		return rating;
 	}
 
-	public void setRating(double raiting) {
+	public void setRating(Double raiting) {
 		this.rating = raiting;
 	}
 
-	public List<String> getTypes() {
-		return types;
+	public String getTypesString() {
+		return typesString;
 	}
 
-	public void setTypes(List<String> types) {
-		this.types = types;
+	public void setTypesString(String typesString) {
+		this.typesString = typesString;
 	}
 
-	public String getPhothoReference() {
-		return phothoReference;
+	public List<String> getTypesList() {
+		return typesList;
 	}
 
-	public void setPhothoReference(String phothoReference) {
-		this.phothoReference = phothoReference;
+	public void setTypesList(List<String> typesList) {
+		this.typesList = typesList;
+	}
+
+	public String getPhotoReference() {
+		return photoReference;
+	}
+
+	public void setPhotoReference(String photoReference) {
+		this.photoReference = photoReference;
 	}
 
 	public Collection<User> getUsers() {

@@ -88,13 +88,10 @@ fun RegisterScreen(navController: NavHostController, authViewModel: AuthViewMode
         // Botón de Register
         Button(
             onClick = {
-                //       if (username.isBlank() || email.isBlank() || password.isBlank()) {
-                //               resultMessage = "Email and password cannot be empty"
-                //               }
                 authViewModel.register(
-                    username = "usuario",
-                    email = "correo@example.com",
-                    password = "contraseña",
+                    username = username,
+                    email = email,
+                    password = password,
                     onSuccess = { message ->
                         Log.d("RegisterSuccess", message)
                         // Muestra el mensaje de éxito

@@ -42,6 +42,9 @@ public class User {
 
     @Column(nullable = true )
     private boolean enabled = true;
+    
+    @Column(name = "session_id")
+    private String sessionId;  
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -51,7 +54,15 @@ public class User {
     )
     private Collection<Role> roles;
     
-    @ManyToMany(fetch = FetchType.EAGER)
+    public Collection<Restaurant> getRestaurants() {
+		return restaurants;
+	}
+
+	public void setRestaurants(Collection<Restaurant> restaurants) {
+		this.restaurants = restaurants;
+	}
+
+	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "restaurant_user",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -104,6 +115,15 @@ public class User {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+    
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
 }

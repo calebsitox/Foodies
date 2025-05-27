@@ -54,4 +54,13 @@ public class UserService {
 		userRepository.save(user);
 		return "New password Changed Succefully log in with new password";
 	}
+	
+//	  public void closeSession(String sessionId) {
+//	        userRepository.deleteBySessionId(sessionId);
+//	    }
+	  
+
+	    public boolean isSessionActive(String sessionId) {
+	        return userRepository.existBySessionId(sessionId);
+	    }
 }
