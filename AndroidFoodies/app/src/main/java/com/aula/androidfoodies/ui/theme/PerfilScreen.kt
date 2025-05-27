@@ -2,9 +2,12 @@ package com.aula.androidfoodies.ui.theme
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -115,26 +118,45 @@ fun PerfilScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             // Botón para editar perfil
-            Button(
-                onClick = {
-                    // Acción: Navegar a pantalla de edición
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800))
-            ) {
-                Text("Editar Perfil", color = Color.White)
-            }
+            Column(modifier = Modifier.fillMaxWidth()) {
 
-            Spacer(modifier = Modifier.height(16.dp))
+                PerfilOptionRow("Editar perfil") {
+                    // Acción editar perfil
+                }
 
-            // Botón de cerrar sesión
-            Button(
-                onClick = {
-                    // Acción: cerrar sesión
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-            ) {
-                Text("Cerrar sesión", color = Color.White)
+                PerfilOptionRow("Cambiar contraseña") {
+                    // Acción cambiar contraseña
+                }
+
+                PerfilOptionRow("Cerrar sesión") {
+                    // Acción cerrar sesión
+                }
+
+                PerfilOptionRow("Borrar cuenta", textColor = Color.Red) {
+                    // Acción borrar cuenta
+                }
             }
         }
+    }
+}
+@Composable
+fun PerfilOptionRow(
+    title: String,
+    textColor: Color = Color.Black,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = textColor
+        )
     }
 }
