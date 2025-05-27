@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,10 +61,12 @@ fun RestaurantImageCarousel(photoUrls: List<String>) {
                 )
             }
 
+            val coroutineScope = rememberCoroutineScope()
+
             // Botones izquierda y derecha
             IconButton(
                 onClick = {
-                    CoroutineScope(Dispatchers.Main).launch {
+                    coroutineScope.launch {
                         pagerState.animateScrollToPage((pagerState.currentPage - 1).coerceAtLeast(0))
                     }
                 },
@@ -76,7 +79,7 @@ fun RestaurantImageCarousel(photoUrls: List<String>) {
 
             IconButton(
                 onClick = {
-                    CoroutineScope(Dispatchers.Main).launch {
+                    coroutineScope.launch {
                         pagerState.animateScrollToPage((pagerState.currentPage + 1).coerceAtMost(photoUrls.lastIndex))
                     }
                 },

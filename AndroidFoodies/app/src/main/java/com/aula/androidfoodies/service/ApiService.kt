@@ -91,7 +91,7 @@ interface ApiService {
         request: GeocodeRequest
     ): Response<Map<String, String>>
 
-    @GET("api/place/detail")
+    @POST("api/place/detail")
     suspend fun resturantDetails(
         @Header("Authorization") token: String,
         @Body request: GeocodeRequest

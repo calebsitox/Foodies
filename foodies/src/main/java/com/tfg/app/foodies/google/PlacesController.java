@@ -159,7 +159,7 @@ public class PlacesController {
 		return ResponseEntity.ok(placesList);
 	}
 
-	@GetMapping("/place/detail")
+	@PostMapping("/place/detail")
 	public ResponseEntity<PlaceDetailsDTO> placeDetail(@RequestHeader("Authorization") String token,
 			@RequestBody GeocodeRequest geocodeRequest) throws JsonMappingException, JsonProcessingException {
 		RestTemplate restTemplate = new RestTemplate();

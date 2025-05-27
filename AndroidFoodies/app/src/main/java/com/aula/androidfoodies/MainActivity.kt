@@ -32,6 +32,7 @@ import androidx.navigation.navArgument
 import com.aula.androidfoodies.ui.theme.AndroidFoodiesTheme
 import com.aula.androidfoodies.ui.theme.LocationSearchScreen
 import com.aula.androidfoodies.ui.theme.MapScreen
+import com.aula.androidfoodies.ui.theme.PerfilScreen
 import com.aula.androidfoodies.ui.theme.RegisterScreen
 import com.aula.androidfoodies.ui.theme.RestaurantDetailScreen
 import com.aula.androidfoodies.ui.theme.SendEmailScreen
@@ -81,13 +82,14 @@ class MainActivity : ComponentActivity() {
             composable("sendEmail") { SendEmailScreen(navController) }
             composable("location") { LocationSearchScreen( locationViewModel, authViewModel, navController) }
             composable("map") { MapScreen(navController, locationViewModel)}
+            composable("profile") { PerfilScreen(navController) }
             composable("restaurantDetail/{placeJson}",
                 arguments = listOf(navArgument("placeJson") { type = NavType.StringType })
             ) { backStackEntry ->
                 val json = backStackEntry.arguments?.getString("placeJson")
                 val place: Map<String, String> = Gson().fromJson(json, object : TypeToken<Map<String, String>>() {}.type)
 
-                RestaurantDetailScreen(place, locationViewModel, authViewModel)
+                RestaurantDetailScreen(place, locationViewModel, authViewModel, navController)
             }
         }
     }
