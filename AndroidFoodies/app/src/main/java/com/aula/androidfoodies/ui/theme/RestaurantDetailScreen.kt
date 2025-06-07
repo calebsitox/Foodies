@@ -30,6 +30,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -70,7 +72,6 @@ fun RestaurantDetailScreen(
     val lon = place["longitude"]?.toDoubleOrNull() ?: 0.0
     val username = authViewModel.loadUsername(context)
     val photoUrl = photoRef?.let { viewModel.buildPhotoUrl(it) }
-
     fun isRestaurantLiked(
         place: Map<String, String>,
         likedList: List<Map<String, String>>

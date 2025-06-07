@@ -16,7 +16,7 @@ import retrofit2.HttpException
 import retrofit2.awaitResponse
 import java.io.IOException
 
-class AuthViewModel () : ViewModel() {
+open class AuthViewModel () : ViewModel() {
     private var _username = mutableStateOf("")
     val username: State<String> get() = _username
 

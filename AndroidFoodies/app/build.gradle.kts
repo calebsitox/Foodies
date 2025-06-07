@@ -127,6 +127,7 @@ dependencies {
     implementation ("com.google.android.libraries.places:places:2.7.0")
     implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.33.2-alpha")
+    implementation("androidx.compose.material:material-icons-extended:1.6.5")
 
 
 }

@@ -36,6 +36,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +81,8 @@ fun LocationSearchScreen(
     val context = LocalContext.current
     val token = TokenManager.getToken(context)
     val isListVisible = remember { mutableStateOf(true) }
+    val locationState by viewModel.location.collectAsState()
+
 
     var expanded by remember { mutableStateOf(false) }
     val opciones = listOf(
@@ -168,15 +171,41 @@ fun LocationSearchScreen(
 
             Spacer(modifier = Modifier.height(9.dp))
 
+            val allSuggestions = listOf("📍 Mi ubicación")
 
             // Lista de sugerencias de autocompletado
             LazyColumn {
                 if (isListVisible.value) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable {
+                                    searchQuery.value = "📍 Mi ubicación"
+                                    isListVisible.value = false
+                                    locationState?.let { (lat, lon) ->
+                                        if (token != null) {
+                                            viewModel.fetchNearbyRestaurants(lat, lon, token)
+                                        }
+                                    }
+                                },
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFFFB74D),
+                                contentColor = Color.Black
+                            ),
+                            elevation = CardDefaults.cardElevation(4.dp)
+                        ) {
+                            Text(
+                                text = "📍 Mi ubicación",
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    }
                     items(viewModel.suggestions) { suggestion ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-
                                 .padding(vertical = 4.dp)
                                 .clickable {
                                     // Actualiza el campo de búsqueda y obtiene coordenadas
