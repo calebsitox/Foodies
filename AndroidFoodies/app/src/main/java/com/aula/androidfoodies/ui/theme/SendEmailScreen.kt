@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -56,8 +58,9 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
     var email by rememberSaveable { mutableStateOf("") }
     var inputCode by rememberSaveable { mutableStateOf("") }
     var newPassword by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
-    var stage by rememberSaveable { mutableStateOf("code") }
+    var stage by rememberSaveable { mutableStateOf("password") }
     var successMessage by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
@@ -165,25 +168,7 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
                 OtpCodeInput { fullCode ->
                     authViewModel.saveInputCode(fullCode)
                 }
-                OutlinedTextField(
-                    value = inputCode,
-                    onValueChange = {
-                        inputCode = it
-                        authViewModel.saveInputCode(it)
-                    },
-                    label = { Text(text  ="Code",
-                        style = TextStyle( fontFamily = fontFoodiess)) },
-                    leadingIcon = { Icon(Icons.Default.Code, contentDescription = null) },
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = isError,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFFF9800),
-                        unfocusedBorderColor = Color.Gray,
-                        focusedLabelColor = Color(0xFFFF9800),
-                        cursorColor = Color(0xFFFF9800)
-                    )
-                )
+
                 if (isError && resultMessage.isNotEmpty()) {
                     Text(
                         text = resultMessage,
@@ -223,7 +208,7 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
                     )
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Email,
+                        imageVector = Icons.Default.TaskAlt,
                         contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp)
                     )
@@ -239,25 +224,75 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
             }
 
             "password" -> {
-                TextField(
+
+                Text(
+                    text = "Change Password",
+                    style = TextStyle(
+                        fontFamily = fontFoodiess),
+                    fontSize = 35.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+
+                OutlinedTextField(
                     value = newPassword,
-                    onValueChange = { newPassword = it },
-                    label = { Text("Nueva contraseña") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                    onValueChange = {
+                        newPassword = it
+                        isError = false
+                    },
+                    label = { Text(text  ="New Password",
+                        style = TextStyle( fontFamily = fontFoodiess)) },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                    trailingIcon = {
+                        val visibilityIcon = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = visibilityIcon, contentDescription = null)
+                        }
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = isError,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFFFF9800),
+                        unfocusedBorderColor = Color.Gray,
+                        focusedLabelColor = Color(0xFFFF9800),
+                        cursorColor = Color(0xFFFF9800)
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                TextField(
+                OutlinedTextField(
                     value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = { Text("Confirmar contraseña") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                    onValueChange = {
+                        confirmPassword = it
+                        isError = false
+                    },
+                    label = { Text(text  ="Confirm Password ",
+                        style = TextStyle( fontFamily = fontFoodiess)) },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                    trailingIcon = {
+                        val visibilityIcon = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = visibilityIcon, contentDescription = null)
+                        }
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = isError,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFFFF9800),
+                        unfocusedBorderColor = Color.Gray,
+                        focusedLabelColor = Color(0xFFFF9800),
+                        cursorColor = Color(0xFFFF9800)
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+
 
                 Button(
                     onClick = {
@@ -297,12 +332,12 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
                     )
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Email,
+                        imageVector = Icons.Default.Check,
                         contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Text(
-                        text = "Change Password",
+                        text = "Check",
                         style = TextStyle( fontFamily = fontFoodiess,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -332,11 +367,17 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
 
             "success" -> {
                 Text(
-                    text = "¡Cambio de contraseña exitoso!",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
+                    text = "Password Changed Successfully!",
+                    style = TextStyle(
+                        fontFamily = fontFoodiess),
+                    fontSize = 50.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 16.dp)
                 )
+
             }
+
         }
     }
 }
@@ -373,13 +414,13 @@ fun OtpCodeInput(
                         }
                         // Si todos tienen un carácter, notificar el código completo
                         if (codeChars.all { it.length == 1 }) {
-                            onCodeComplete(codeChars.joinToString(""))
+                            onCodeComplete(codeChars.joinToString(" "))
                         }
                     }
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .aspectRatio(1f)
+                    .height(50.dp)
                     .focusRequester(focusRequesters[index])
                     .clip(RoundedCornerShape(16.dp)),
                 singleLine = true,
@@ -388,11 +429,14 @@ fun OtpCodeInput(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 ),
+                shape = RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color(0xFFFF9800),
                     unfocusedBorderColor = Color.Gray,
-                    cursorColor = Color(0xFFFF9800)
+                    cursorColor = Color(0xFFFF9800),
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.DarkGray
                 )
             )
         }
