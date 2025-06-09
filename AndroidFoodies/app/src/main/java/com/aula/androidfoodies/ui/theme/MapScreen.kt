@@ -41,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aula.androidfoodies.R
 import com.aula.androidfoodies.utils.TokenManager
 import com.aula.androidfoodies.viewmodel.AutocompleteViewModel
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.MapProperties
 
@@ -130,7 +131,8 @@ fun MapScreen(navController: NavHostController, locationViewModel: AutocompleteV
                     Marker(
                         state = MarkerState(position = LatLng(lat.toDouble(), lon.toDouble())),
                         title = restaurant["name"],
-                        snippet = "NearRestaurant"
+                        snippet = "NearRestaurant",
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                     )
                 }
             }

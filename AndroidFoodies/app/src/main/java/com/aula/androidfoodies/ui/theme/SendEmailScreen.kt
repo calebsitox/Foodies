@@ -1,6 +1,9 @@
 package com.aula.androidfoodies.ui.theme
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,6 +55,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.aula.androidfoodies.viewmodel.AuthViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewModel = viewModel()) {
@@ -60,12 +64,13 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
     var newPassword by rememberSaveable { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
-    var stage by rememberSaveable { mutableStateOf("password") }
+    var stage by rememberSaveable { mutableStateOf("email") }
     var successMessage by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
     var resultMessage by remember { mutableStateOf("") }
-    var code by remember { mutableStateOf("") }
+    var visible by remember { mutableStateOf(true) }
+    var otpCode by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -165,9 +170,13 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                OtpCodeInput { fullCode ->
-                    authViewModel.saveInputCode(fullCode)
-                }
+                OtpCodeInput(
+                    otpLength = 6, // Longitud del código
+                    onCodeComplete = { code ->
+                        otpCode = code
+                        authViewModel.saveInputCode(code)
+                    }
+                )
 
                 if (isError && resultMessage.isNotEmpty()) {
                     Text(
@@ -181,9 +190,9 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
 
                 Button(
                     onClick = {
-                        Log.d("SingleScreen", "Código ingresado: $inputCode")
+                        Log.d("SingleScreen", "Código ingresado: $otpCode")
                         authViewModel.confirmation(
-                            inputCode = inputCode,
+                            inputCode = otpCode,
                             onSuccess = { message ->
                                 stage = "password"
                             },
@@ -366,15 +375,29 @@ fun SendEmailScreen(navController: NavHostController, authViewModel: AuthViewMod
             }
 
             "success" -> {
-                Text(
-                    text = "Password Changed Successfully!",
-                    style = TextStyle(
-                        fontFamily = fontFoodiess),
-                    fontSize = 50.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                LaunchedEffect(Unit) {
+                    delay(3000L) // Espera 3 segundos
+                    visible = false
+                    delay(500L) // Espera a que termine la animación
+                    navController.navigate("login") {
+                        popUpTo("passwordChangeSuccess") { inclusive = true }
+                    }
+                }
+
+
+                    AnimatedVisibility(
+                        visible = visible,
+                        exit = fadeOut(animationSpec = tween(durationMillis = 500))
+                    ) {
+                        Text(
+                            text = "¡Contraseña cambiada exitosamente!",
+                            style = TextStyle(fontFamily = fontFoodiess),
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
 
             }
 
@@ -420,7 +443,7 @@ fun OtpCodeInput(
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .height(50.dp)
+                    .height(60.dp)
                     .focusRequester(focusRequesters[index])
                     .clip(RoundedCornerShape(16.dp)),
                 singleLine = true,

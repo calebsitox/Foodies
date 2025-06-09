@@ -64,6 +64,11 @@ interface ApiService {
         @Query("input") input: String
     ): Response<AutocompleteResponse>
 
+    @GET("api/user/email")
+    suspend fun getEmail(
+        @Query("username") input: String
+    ): String
+
     @GET("api/geocode/addressToCoordinates")
     fun getCoordinates(@Query("address") request: AddressRequest): Call<GeocodeResponseToCordenates>
 

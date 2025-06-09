@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
             composable("sendEmail") { SendEmailScreen(navController) }
             composable("location") { LocationSearchScreen( locationViewModel, authViewModel, navController) }
             composable("map") { MapScreen(navController, locationViewModel)}
-            composable("profile") { PerfilScreen(navController) }
+            composable("profile") { PerfilScreen(navController, authViewModel) }
             composable("restaurantDetail/{placeJson}",
                 arguments = listOf(navArgument("placeJson") { type = NavType.StringType })
             ) { backStackEntry ->

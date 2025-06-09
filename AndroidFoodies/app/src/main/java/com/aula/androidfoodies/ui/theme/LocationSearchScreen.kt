@@ -33,6 +33,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,9 +45,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -82,6 +85,7 @@ fun LocationSearchScreen(
     val token = TokenManager.getToken(context)
     val isListVisible = remember { mutableStateOf(true) }
     val locationState by viewModel.location.collectAsState()
+
 
 
     var expanded by remember { mutableStateOf(false) }
@@ -163,10 +167,16 @@ fun LocationSearchScreen(
                 },
                 label = { Text("Buscar dirección") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-
-                modifier = Modifier.fillMaxWidth().onFocusChanged { focusState ->
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth().onFocusChanged{ focusState ->
                     isListVisible.value = focusState.isFocused
-                }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFFF9800),
+                    unfocusedBorderColor = Color.Gray,
+                    focusedLabelColor = Color(0xFFFF9800),
+                    cursorColor = Color(0xFFFF9800)
+                )
             )
 
             Spacer(modifier = Modifier.height(9.dp))
@@ -326,11 +336,9 @@ fun LocationSearchScreen(
             }
 
 
-            Spacer(modifier = Modifier.height(9.dp))
-
             if (restaurants.isEmpty()) {
                 Text(
-                    text = "No restaurants found. Try searching for another place.",
+                    text = "Search more Restaurants!. Try searching for another place.",
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -341,7 +349,7 @@ fun LocationSearchScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp)
+                                .padding(16.dp)
                                 .clickable{
                                     val gson = Gson()
                                     val placeJson = gson.toJson(place)
@@ -350,9 +358,10 @@ fun LocationSearchScreen(
                                     navController.navigate("restaurantDetail/$encodedPlace")
                                 },
                             colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFFFFC107) // Gris claro suave
+                                containerColor = Color(0xFFFFA726)
                             ),
-                            elevation = CardDefaults.cardElevation(4.dp)
+                            elevation = CardDefaults.cardElevation(10.dp),
+                            shape = RoundedCornerShape(20.dp),
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 // Imagen desde URL
@@ -370,7 +379,8 @@ fun LocationSearchScreen(
                                         contentDescription = "Imagen del restaurante",
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(150.dp)
+                                            .height(200.dp)
+                                            .clip(RoundedCornerShape(16.dp))
                                     )
                                 }
 
@@ -379,19 +389,27 @@ fun LocationSearchScreen(
                                 // Nombre del restaurante
                                 Text(
                                     text = place["name"] ?: "Sin nombre",
-                                    style = MaterialTheme.typography.titleMedium
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
                                 )
+
+                                Spacer(modifier = Modifier.height(6.dp))
 
                                 // Dirección del restaurante
                                 Text(
                                     text = place["address"] ?: "Sin dirección",
-                                    style = MaterialTheme.typography.bodyMedium
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.DarkGray
                                 )
 
+                                Spacer(modifier = Modifier.height(6.dp))
                                 // Valoracion del restaurante
                                 Text(
-                                    text = place["rating"] ?: "Sin valoracion",
-                                    style = MaterialTheme.typography.bodySmall
+                                    text = "⭐ ${place["rating"] ?: "Sin valoración"}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color(0xFFfbc02d), // color dorado tipo estrella
+                                    fontWeight = FontWeight.SemiBold
                                 )
 
                                 Spacer(modifier = Modifier.height(8.dp))

@@ -20,6 +20,7 @@ open class AuthViewModel () : ViewModel() {
     private var _username = mutableStateOf("")
     val username: State<String> get() = _username
 
+
     fun loadUsername(context: Context): String{
         val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
         return prefs.getString("username", "") ?: ""
@@ -35,6 +36,7 @@ open class AuthViewModel () : ViewModel() {
 
     private var _email = mutableStateOf("")
     val email: State<String> = _email
+
 
     private var _inputCode = mutableStateOf("")
     val inputCode: State<String> = _inputCode
@@ -185,6 +187,16 @@ open class AuthViewModel () : ViewModel() {
         }
     }
 
+    fun getEmail(user: String) {
+        viewModelScope.launch {
+            try {
+                val result = RetrofitInstance.api.getEmail(user)
+                _email.value = result
+            } catch (e: Exception) {
+                // Manejo de error si lo deseas
+            }
+        }
+    }
 
 }
 
